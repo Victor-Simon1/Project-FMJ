@@ -1,0 +1,9 @@
+# Vim temp files
+*.swp
+
+# C++ object files
+*.o
+
+.vs/*
+# C++ executable files
+bin/*

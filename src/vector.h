@@ -26,7 +26,7 @@ public:
 	bool nearly_equal(const Vector<T, N>&, const Vector<T, N>&);
 	T Vector<T, N>::norm();
 	bool operator==(const Vector<T, N>&, const Vector<T, N>&);
-	bool operator==(const Vector<T, N>&, const Vector<T, N>&);
+	bool operator!=(const Vector<T, N>&, const Vector<T, N>&);
 	std::ostream operator<<(std::ostream&, const Vector<T, N> v);
 	Vector<T, N> operator+(const Vector<T, N>&, const Vector<T, N>&);
 	Vector<T, N> operator-(const Vector<T, N>&);

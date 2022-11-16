@@ -80,12 +80,30 @@ namespace aline {
 		if (v.norm() == 1) return true;
 		return false;
 	}
-	bool nearly_equal(const Vector<T, N>&, const Vector<T, N>&)
+	bool nearly_equal(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
-
+		if (v1.norm() - v2.norm() < 0.1)
+			return true;
+		return false;
 	}
 	T Vector::norm()
 	{
 		return sqrt(dot(*this, *this));
+	}
+	bool Vector::operator==(const Vector<T, N>& v1, const Vector<T, N>& v2)
+	{
+		for (int i = 0; i < N; i++)
+		{
+			if(v1.vec[i] != v2.vec[i]) return false
+		}
+		return true;
+	}
+	bool Vector::operator!=(const Vector<T, N>& v1, const Vector<T, N>& v2)
+	{
+		for (int i = 0; i < N; i++)
+		{
+			if (v1.vec[i] == v2.vec[i]) return false
+		}
+		return true;
 	}
 }

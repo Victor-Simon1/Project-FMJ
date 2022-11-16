@@ -2,14 +2,18 @@
 #include <initializer_list>
 
 namespace aline {
+
+	template <class T,class N>
 	Vector<T, N>::Vector()
 	{
 		vec = new T[N];
 	}
+	template <class T,class N>
 	Vector<T, N>::Vector(std::initializer_list<Vector<T, N>>)
 	{
 
 	}
+	template <class T,class N>
 	Vector<T, N>::Vector(const Vector<T, N>& v)
 	{
 		vec = new T[N];
@@ -18,8 +22,8 @@ namespace aline {
 			vec[i] = v[i];
 		}
 	}
-
-	T Vector::at(size_t index) const
+	template <class T,class N>
+	T Vector<T,N>::at(size_t index) const
 	{
 		if (index > N || index < 0)
 		{
@@ -27,18 +31,18 @@ namespace aline {
 		}
 		return vec[index];
 	}
-
-	T Vector::operator[](size_t index)
+	template <class T,class N>
+	T Vector<T,N>::operator[](size_t index) const
 	{
 		return vec[index];
 	}
-
-	T& Vector::operator[](size_t index)
+	template <class T,class N>
+	T& Vector<T,N>::operator[](size_t index)
 	{
 		return &vec[index];
 	}
-
-	Vector<T, N>& Vector::operator+=(const Vector<T, N>& v) 
+	template <class T,class N>
+	Vector<T, N>& Vector<T,N>::operator+=(const Vector<T, N>& v) 
 	{
 		for (int i = 0; i < N; i++)
 		{
@@ -46,8 +50,8 @@ namespace aline {
 		}
 		return *this;
 	}
-
-	Vector<T, N> Vector::cross(const Vector<T, N>& v1, const Vector<T, N>& v2)
+	template <class T,class N>
+	Vector<T, N> Vector<T,N>::cross(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		if (N < 3) throw runtime_error("Less than 3");
 		Vector<T, N> crossproduct = Vector();
@@ -57,7 +61,8 @@ namespace aline {
 			else crossproduct.vec[i] = 0;
 		}
 	}
-	T Vector::dot(const Vector<T, N>& v1, const Vector<T, N>& v2)
+	template <class T,class N>
+	T Vector<T,N>::dot(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		int sum = 0;
 		for (int i = 0; i < N; i++)
@@ -66,7 +71,8 @@ namespace aline {
 		}
 		return sum;
 	}
-	bool Vector::isnan(const Vector& v)
+	template <class T,class N>
+	bool Vector<T,N>::isnan(const Vector<T,N>& v)
 	{
 		for (int i = 0; i < N; i++)
 		{
@@ -74,23 +80,26 @@ namespace aline {
 		}
 		return false;
 	}
-
-	bool Vector::is_unit(const Vector<T, N>& v)
+	template <class T,class N>
+	bool Vector<T,N>::is_unit(const Vector<T, N>& v)
 	{
 		if (v.norm() == 1) return true;
 		return false;
 	}
-	bool nearly_equal(const Vector<T, N>& v1, const Vector<T, N>& v2)
+	template <class T,class N>
+	bool Vector<T,N>::nearly_equal(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		if (v1.norm() - v2.norm() < 0.1)
 			return true;
 		return false;
 	}
-	T Vector::norm()
+	template <class T,class N>
+	T Vector<T,N>::norm()
 	{
 		return sqrt(dot(*this, *this));
 	}
-	bool Vector::operator==(const Vector<T, N>& v1, const Vector<T, N>& v2)
+	template <class T,class N>
+	bool Vector<T,N>::operator==(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		for (int i = 0; i < N; i++)
 		{
@@ -98,12 +107,36 @@ namespace aline {
 		}
 		return true;
 	}
-	bool Vector::operator!=(const Vector<T, N>& v1, const Vector<T, N>& v2)
+	template <class T,class N>
+	bool Vector<T,N>::operator!=(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		for (int i = 0; i < N; i++)
 		{
 			if (v1.vec[i] == v2.vec[i]) return false
 		}
 		return true;
+	}
+	template <class T,class N>
+	Vector<T, N> Vector<T, N>::operator+(const Vector<T, N>&, const Vector<T, N>&)
+	{
+		Vector<T,N> add = Vector();
+		for(int i =0;i<N;i++)
+		{
+			add[i] = v1.vec[i] + v2.vec[i];
+		}
+		return add;
+	}
+	Vector<T, N> operator-(const Vector<T, N>&)
+	{
+		for(int i=0<)
+	}
+	Vector<T, N> operator-(const Vector<T, N>& v1,const Vector<T, N>& v2)
+	{
+		Vector<T,N> sub = Vector();
+		for(int i =0;i<N;i++)
+		{
+			sub[i] = v1.vec[i] - v2.vec[i];
+		}
+		return sub;
 	}
 }

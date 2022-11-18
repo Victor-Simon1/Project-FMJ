@@ -1,4 +1,5 @@
 #include "vector.h"
+#include "math.h"
 #include <initializer_list>
 
 namespace aline {
@@ -9,7 +10,7 @@ namespace aline {
 		vec = new T[N];
 	}
 	template <class T,class N>
-	Vector<T, N>::Vector(std::initializer_list<Vector<T, N>>)
+	Vector<T, N>::Vector(std::initializer_list<T>)
 	{
 
 	}
@@ -51,7 +52,7 @@ namespace aline {
 		return *this;
 	}
 	template <class T,class N>
-	Vector<T, N> Vector<T,N>::cross(const Vector<T, N>& v1, const Vector<T, N>& v2)
+	Vector<T, N> cross(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		if (N < 3) throw runtime_error("Less than 3");
 		Vector<T, N> crossproduct = Vector();
@@ -62,7 +63,7 @@ namespace aline {
 		}
 	}
 	template <class T,class N>
-	T Vector<T,N>::dot(const Vector<T, N>& v1, const Vector<T, N>& v2)
+	T dot(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		int sum = 0;
 		for (int i = 0; i < N; i++)
@@ -72,7 +73,7 @@ namespace aline {
 		return sum;
 	}
 	template <class T,class N>
-	bool Vector<T,N>::isnan(const Vector<T,N>& v)
+	bool isnan(const Vector<T,N>& v)
 	{
 		for (int i = 0; i < N; i++)
 		{
@@ -81,25 +82,25 @@ namespace aline {
 		return false;
 	}
 	template <class T,class N>
-	bool Vector<T,N>::is_unit(const Vector<T, N>& v)
+	bool is_unit(const Vector<T, N>& v)
 	{
 		if (v.norm() == 1) return true;
 		return false;
 	}
 	template <class T,class N>
-	bool Vector<T,N>::nearly_equal(const Vector<T, N>& v1, const Vector<T, N>& v2)
+	bool nearly_equal(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		if (v1.norm() - v2.norm() < 0.1)
 			return true;
 		return false;
 	}
 	template <class T,class N>
-	T Vector<T,N>::norm()
+	T norm()
 	{
-		return sqrt(dot(*this, *this));
+		return dot(*this, *this);
 	}
 	template <class T,class N>
-	bool Vector<T,N>::operator==(const Vector<T, N>& v1, const Vector<T, N>& v2)
+	bool operator==(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		for (int i = 0; i < N; i++)
 		{
@@ -108,7 +109,7 @@ namespace aline {
 		return true;
 	}
 	template <class T,class N>
-	bool Vector<T,N>::operator!=(const Vector<T, N>& v1, const Vector<T, N>& v2)
+	bool operator!=(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		for (int i = 0; i < N; i++)
 		{
@@ -117,7 +118,7 @@ namespace aline {
 		return true;
 	}
 	template <class T,class N>
-	Vector<T, N> Vector<T, N>::operator+(const Vector<T, N>&, const Vector<T, N>&)
+	Vector<T, N> operator+(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		Vector<T,N> add = Vector();
 		for(int i =0;i<N;i++)
@@ -126,10 +127,17 @@ namespace aline {
 		}
 		return add;
 	}
-	Vector<T, N> operator-(const Vector<T, N>&)
+	template <class T,class N>
+	Vector<T, N> operator-(const Vector<T, N>& v1)
 	{
-		for(int i=0<)
+		Vector<T,N> negation = Vector();
+		for(int i=0;i<N;i++)
+		{
+			negation.vec[i] = vec[i];
+		}
+		return negation;
 	}
+	template <class T,class N>
 	Vector<T, N> operator-(const Vector<T, N>& v1,const Vector<T, N>& v2)
 	{
 		Vector<T,N> sub = Vector();
@@ -138,5 +146,65 @@ namespace aline {
 			sub[i] = v1.vec[i] - v2.vec[i];
 		}
 		return sub;
+	}
+	template <class T,class N>
+	Vector<T, N> operator*(const T& scalarValue, const Vector<T, N>& v)
+	{
+		Vector<T,N> scalar = Vector();
+		for(int i =0;i<N;i++)
+		{
+			scalar[i] = scalarValue * v.vec[i];
+		}
+		return scalar;
+	}
+	template <class T,class N>
+	Vector<T, N> operator*(const Vector<T, N>& v,const T& scalarValue)
+	{
+		return scalarValue*v;
+		/*Vector<T,N> scalar = Vector();
+		for(int i =0;i<N;i++)
+		{
+			scalar[i] = scalarValue * v.vec[i];
+		}
+		return scalar;*/
+	}
+	template <class T,class N>
+	Vector<T, N> operator*(const Vector<T, N>& v1,const Vector<T, N>& v2)
+	{
+		Vector<T,N> scalar = Vector();
+		for(int i =0;i<N;i++)
+		{
+			scalar[i] = v1.vec[i] * v2.vec[i];
+		}
+		return scalar;
+	}
+	template <class T,class N>
+	Vector<T, N> operator/(const Vector<T, N>& v,const T& scalarValue)
+	{
+		Vector<T,N> scalar = Vector();
+		for(int i =0;i<N;i++)
+		{
+			scalar[i] = v.vec[i] / scalarValue;
+		}
+		return scalar;
+	}
+	template <class T,class N>
+	T Vector<T,N>::sq_norm()
+	{
+		return sqrt(norm());
+	}
+	template <class T,class N>
+	std::string to_string( const Vector<T,N> & v)
+	{
+		std::cout << "Vector of size "<< N << ":(" << v <<")" << endl;
+	}
+	template <class T,class N>
+	Vector<T, N> unit_vector(const Vector<T, N>& v)
+	{
+		Vector<T,N> unit = Vector(v);
+		for(int i= 0;i<N;i++)
+		{
+			unit[i] /= v.sq_norm();
+		}
 	}
 }

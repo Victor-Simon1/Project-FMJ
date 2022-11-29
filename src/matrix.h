@@ -26,73 +26,105 @@ namespace aline
                     v1.push_back(0);
                 }
                 mat.push_back(v1);
-            }
-                
-				      
+            }  
         }
         Matrix(std::initializer_list<std::initializer_list<T>> list)
         {
-            mat =vector<vector<T>>();
+            //mat =vector<vector<T>>();
             int l=0,c=0;
+          /*
             for(auto x: list)
             {
-                c = 0;
-                for(T value: x)
+                vector<T> v = vector<T>(x);
+                int  size = v.size();
+                while(size< N)
                 {
+                    v.push_back(0);
+                    size = v.size();
+                }   
+                
+                //std::cout <<"auto"<<std::endl;
+                mat.push_back(v);
+                size =  mat.size();
+                 v = vector<T>();
+                while(size< M)
+                {
+                    for(int i =0;i<N;i++)
+                        v.push_back(0);
+                    mat.push_back(v);
+                    size = mat.size();
+                } 
+               /* for(T value: x)
+                {
+                    std::cout <<"T"<<std::endl;
+                    mat.p
                     mat[l][c] = value;
                     c++;
                 }
                 l++;
-            }
-                
-
+            }   */
+            for(int i=0;i<M;i++)
+            {
+                vector<T> v1;
+                for(int i=0;i<N;i++)
+                {
+                    v1.push_back(0);
+                }
+                mat.push_back(v1);
+            }  
         }
         Matrix(const Matrix<T,M,N> &m)
         {
+            
             mat =vector<vector<T>>();
-            for(vector<T> v : mat)
+            for(vector<T> v : m.mat)
             {
+                
                 vector<T> temp;
                 for(T value: v)
                 {
+                    
                     temp.push_back(value);
                 }
                 mat.push_back(temp);
             }
+            std::cout << "Fin" << std::endl;
         }
 
         Vector<T,N> at(size_t row)
         {
-            if((row>M) || (row<0)) throw runtime_error("Index non conforme");
+            if((row>=M) || (row<0)) throw runtime_error("Index non conforme");
             Vector<T,N> vect;
             for(int i =0;i<N;i++)
             {
-                vect.vec.push_back(mat[row][i]);
+                vect.vec[i] = mat[row][i];
             }
             return vect;
         }
 
         T at(size_t row,size_t col)
         {
-            if(row>M || row<0) throw runtime_error("Index non conforme");
-            if(col>N || col<0) throw runtime_error("Index non conforme");
+            if(row>=M || row<0) throw runtime_error("Index non conforme");
+            if(col>=N || col<0) throw runtime_error("Index non conforme");
             return mat[row][col];
         }
         Vector<T,N> operator[]( size_t index ) const
         {
-            Vector<T,N> vect= Vector<T,N>();
+            std::cout <<"la";
+            Vector<T,N> vect;
             for(int i =0;i<N;i++)
             {
-                vect.vec.push_back(mat[index][i]);
+                vect.vec[i] = mat[index][i];
             }
             return vect;
         }
         Vector<T,N> &operator[]( size_t index ) 
         {
-            Vector<T,N> vect = Vector<T,N>();
-            for(int i =0;i <=N;i++)
+            std::cout <<"ici";
+            Vector<T,N> vect;
+           for(int i =0;i <=N;i++)
             {
-                vect.vec.push_back(mat[index][i]);
+                vect.vec[i] = mat[index][i];
             }
             return vect;
         }
@@ -118,6 +150,9 @@ namespace aline
     Matrix<T,M,N> inverse( const Matrix<T,M,N> & )
     {
         if(N != M)return NAN;
+        Matrix<T,M,N> m;
+
+        return m;
 
     }
     template <class T,size_t M,size_t N>
@@ -127,7 +162,7 @@ namespace aline
         {
             for(int col=0;col<N;col++)
             {
-                if(m.mat[row][col] == NAN) return true;
+                if(std::isnan(m.mat[row][col])) return true;
             }
         }
         return false;
@@ -156,14 +191,15 @@ namespace aline
         return true;*/
     }
     template <class T,size_t M, size_t N>
-    std::ostream& operator<<(std::ostream out, const Matrix<T,M,N> &m ){
+    std::ostream& operator<<(std::ostream &out, const Matrix<T,M,N> &m ){
         for(int row=0;row<M;row++)
             {
+                out <<"{";
                 for(int col=0;col<N;col++)
                 {
-                    out << m.mat[row][col] ;
+                    out << m.mat[row][col] <<" " ;
                 }
-                out << endl;
+                out<< "}" << endl;
             }
         return out;
     }

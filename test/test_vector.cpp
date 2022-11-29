@@ -90,7 +90,7 @@ int test_isnan()
     Vec3i b;
     Vec2r g { NAN, 0 };
     Vec2r h { 0, NAN };
-
+    std::cout << "Test" << g << "Test"<<std::endl;
     TestVector test_vec
     {
         { "not isnan( a )", not isnan( a ) },

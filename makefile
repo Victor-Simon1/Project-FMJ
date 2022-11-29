@@ -61,7 +61,9 @@ $(BIN_DIR)/test_vector: $(OBJ_DIR)/test_vector.o
 $(BIN_DIR)/test_matrix: $(OBJ_DIR)/test_matrix.o
 	mkdir -p $(BIN_DIR)
 	$(CC) $^ $(LDFLAGS) -o $@
-
+$(BIN_DIR)/my_test: $(OBJ_DIR)/my_test.o
+	mkdir -p $(BIN_DIR)
+	$(CC) $^ $(LDFLAGS) -o $@
 $(TEST_OBJ_FILES): $(OBJ_DIR)/%.$(OBJ_EXT): $(TEST_SRC_DIR)/%.$(SRC_EXT) 
 	mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -o $@ -c $<

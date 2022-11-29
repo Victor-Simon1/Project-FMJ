@@ -1,29 +1,30 @@
 #include "vector.h"
-#include "math.h"
+#include <cmath>
 #include <initializer_list>
+#include <vector>
 
 namespace aline {
-
-	template <class T,class N>
+/*
+	template <class T,size_t N>
 	Vector<T, N>::Vector()
 	{
-		vec = new T[N];
+		vec = std::vector<T>();
 	}
-	template <class T,class N>
-	Vector<T, N>::Vector(std::initializer_list<T>)
+	template <class T,size_t N>
+	Vector<T, N>::Vector(std::initializer_list<T> l ) 
 	{
-
+		vec = l;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	Vector<T, N>::Vector(const Vector<T, N>& v)
 	{
-		vec = new T[N];
+		vec = vector();
 		for (int i = 0; i < N; i++)
 		{
-			vec[i] = v[i];
+			vec.push_back( v[i]);
 		}
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	T Vector<T,N>::at(size_t index) const
 	{
 		if (index > N || index < 0)
@@ -32,17 +33,17 @@ namespace aline {
 		}
 		return vec[index];
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	T Vector<T,N>::operator[](size_t index) const
 	{
 		return vec[index];
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	T& Vector<T,N>::operator[](size_t index)
 	{
 		return &vec[index];
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	Vector<T, N>& Vector<T,N>::operator+=(const Vector<T, N>& v) 
 	{
 		for (int i = 0; i < N; i++)
@@ -51,7 +52,7 @@ namespace aline {
 		}
 		return *this;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	Vector<T, N> cross(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		if (N < 3) throw runtime_error("Less than 3");
@@ -62,7 +63,7 @@ namespace aline {
 			else crossproduct.vec[i] = 0;
 		}
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	T dot(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		int sum = 0;
@@ -72,7 +73,7 @@ namespace aline {
 		}
 		return sum;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	bool isnan(const Vector<T,N>& v)
 	{
 		for (int i = 0; i < N; i++)
@@ -81,25 +82,25 @@ namespace aline {
 		}
 		return false;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	bool is_unit(const Vector<T, N>& v)
 	{
 		if (v.norm() == 1) return true;
 		return false;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	bool nearly_equal(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		if (v1.norm() - v2.norm() < 0.1)
 			return true;
 		return false;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	T norm()
 	{
 		return dot(*this, *this);
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	bool operator==(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		for (int i = 0; i < N; i++)
@@ -108,7 +109,7 @@ namespace aline {
 		}
 		return true;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	bool operator!=(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		for (int i = 0; i < N; i++)
@@ -117,7 +118,7 @@ namespace aline {
 		}
 		return true;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	Vector<T, N> operator+(const Vector<T, N>& v1, const Vector<T, N>& v2)
 	{
 		Vector<T,N> add = Vector();
@@ -127,7 +128,7 @@ namespace aline {
 		}
 		return add;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	Vector<T, N> operator-(const Vector<T, N>& v1)
 	{
 		Vector<T,N> negation = Vector();
@@ -137,7 +138,7 @@ namespace aline {
 		}
 		return negation;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	Vector<T, N> operator-(const Vector<T, N>& v1,const Vector<T, N>& v2)
 	{
 		Vector<T,N> sub = Vector();
@@ -147,7 +148,7 @@ namespace aline {
 		}
 		return sub;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	Vector<T, N> operator*(const T& scalarValue, const Vector<T, N>& v)
 	{
 		Vector<T,N> scalar = Vector();
@@ -157,18 +158,18 @@ namespace aline {
 		}
 		return scalar;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	Vector<T, N> operator*(const Vector<T, N>& v,const T& scalarValue)
 	{
 		return scalarValue*v;
-		/*Vector<T,N> scalar = Vector();
+		Vector<T,N> scalar = Vector();
 		for(int i =0;i<N;i++)
 		{
 			scalar[i] = scalarValue * v.vec[i];
 		}
-		return scalar;*/
+		return scalar;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	Vector<T, N> operator*(const Vector<T, N>& v1,const Vector<T, N>& v2)
 	{
 		Vector<T,N> scalar = Vector();
@@ -178,7 +179,7 @@ namespace aline {
 		}
 		return scalar;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	Vector<T, N> operator/(const Vector<T, N>& v,const T& scalarValue)
 	{
 		Vector<T,N> scalar = Vector();
@@ -188,17 +189,18 @@ namespace aline {
 		}
 		return scalar;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	T Vector<T,N>::sq_norm()
 	{
 		return sqrt(norm());
 	}
-	template <class T,class N>
+
+	template <class T,size_t N>
 	std::string to_string( const Vector<T,N> & v)
 	{
 		std::cout << "Vector of size "<< N << ":(" << v <<")" << endl;
 	}
-	template <class T,class N>
+	template <class T,size_t N>
 	Vector<T, N> unit_vector(const Vector<T, N>& v)
 	{
 		Vector<T,N> unit = Vector(v);
@@ -207,4 +209,13 @@ namespace aline {
 			unit[i] /= v.sq_norm();
 		}
 	}
+	template <class T,size_t N>
+	std::ostream &operator <<(std::ostream &s, const Vector<T,N> &v)
+	{
+		s <<  "La chaine de taille est : " ;
+		s << endl;
+		return s;
+	}
+
+*/
 }

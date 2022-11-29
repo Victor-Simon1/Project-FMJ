@@ -2,21 +2,74 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 #include "vector.h"
+#include <vector>
+#include <cmath>
+#include <iostream>
+using namespace std;
 namespace aline
 {
-    template <class T,class M,class N>
+
+    //const int NAN = 0;
+    template <class T,size_t M,size_t N>
     class Matrix
     {
     public:
-        T **mat
-        Matrix();
-        Matrix(std::initializer_list<T>);
-        Matrix(const Matrix<T,M,N> &m);
+        //T **mat
+        vector<vector<T>> mat;
+        Matrix(){
+            //mat =vector<vector<T>>();
+            for(int i=0;i<M;i++)
+            {
+                vector<T> v1;
+                for(int i=0;i<N;i++)
+                {
+                    v1.push_back(0);
+                }
+                mat.push_back(v1);
+            }
+                
+				      
+        }
+        Matrix(std::initializer_list<std::initializer_list<T>> list)
+        {
+            mat =vector<vector<T>>();
+            int l=0,c=0;
+            for(auto x: list)
+            {
+                c = 0;
+                for(T value: x)
+                {
+                    mat[l][c] = value;
+                    c++;
+                }
+                l++;
+            }
+                
+
+        }
+        Matrix(const Matrix<T,M,N> &m)
+        {
+            mat =vector<vector<T>>();
+            for(vector<T> v : mat)
+            {
+                vector<T> temp;
+                for(T value: v)
+                {
+                    temp.push_back(value);
+                }
+                mat.push_back(temp);
+            }
+        }
 
         Vector<T,N> at(size_t row)
         {
-            if(row>M || row<0) throw runtime_error("Index non conforme");
-            return mat[row];
+            if((row>M) || (row<0)) throw runtime_error("Index non conforme");
+            Vector<T,N> vect;
+            for(int i =0;i<N;i++)
+            {
+                vect.vec.push_back(mat[row][i]);
+            }
+            return vect;
         }
 
         T at(size_t row,size_t col)
@@ -25,15 +78,25 @@ namespace aline
             if(col>N || col<0) throw runtime_error("Index non conforme");
             return mat[row][col];
         }
-        Vector<T,N> Matrix<T,M,N>::operator[]( size_t i ) const
+        Vector<T,N> operator[]( size_t index ) const
         {
-            return row[i];
+            Vector<T,N> vect= Vector<T,N>();
+            for(int i =0;i<N;i++)
+            {
+                vect.vec.push_back(mat[index][i]);
+            }
+            return vect;
         }
-        Vector<T,N> Matrix<T,M,N>::operator[]( size_t i ) const
+        Vector<T,N> &operator[]( size_t index ) 
         {
-            return row[i];
+            Vector<T,N> vect = Vector<T,N>();
+            for(int i =0;i <=N;i++)
+            {
+                vect.vec.push_back(mat[index][i]);
+            }
+            return vect;
         }
-        Matrix<T,M,N> & Matrix<T,M,N>::operator+=( const Matrix<T,M,N> & m)
+        Matrix<T,M,N> &operator+=( const Matrix<T,M,N> & m)
         {
             for(int row=0;row<M;row++)
             {
@@ -42,16 +105,22 @@ namespace aline
                     mat[row][col] += m.mat[row][col];
                 }
             }
+            return *this;
         }
-        return *this;
+       
     };
-    template <class T,class M,class N>
+    template <class T,size_t M,size_t N>
+    bool nearly_equal(Matrix<T,M,N> m1,Matrix<T,M,N> m2)
+    {
+        return true;
+    }
+    template <class T,size_t M,size_t N>
     Matrix<T,M,N> inverse( const Matrix<T,M,N> & )
     {
         if(N != M)return NAN;
 
     }
-    template <class T,class M,class N>
+    template <class T,size_t M,size_t N>
     bool isnan( const Matrix<T,M,N> &m )
     {
         for(int row=0;row<M;row++)
@@ -63,7 +132,7 @@ namespace aline
         }
         return false;
     }
-    template <class T,class M,class N>
+    template <class T,size_t M,size_t N>
     bool operator==( const Matrix<T,M,N> &m1, const Matrix<T,M,N> &m2 ){
          for(int row=0;row<M;row++)
             {
@@ -74,9 +143,9 @@ namespace aline
             }
         return true;
     }
-    template <class T,class M,class N>
+    template <class T,size_t M,size_t N>
     bool operator!=( const Matrix<T,M,N> &m1, const Matrix<T,M,N> &m2 ){
-        return !(m1==m2)
+        return !(m1==m2);
         /*for(int row=0;row<M;row++)
             {
                 for(int col=0;col<N;col++)
@@ -86,8 +155,8 @@ namespace aline
             }
         return true;*/
     }
-    template <class T,class M,class N>
-    std::ostream & operator<<( std::ostream out, const Matrix<T,M,N> &m ){
+    template <class T,size_t M, size_t N>
+    std::ostream& operator<<(std::ostream out, const Matrix<T,M,N> &m ){
         for(int row=0;row<M;row++)
             {
                 for(int col=0;col<N;col++)
@@ -98,9 +167,9 @@ namespace aline
             }
         return out;
     }
-    template <class T,class M,class N>
+    template <class T,size_t M,size_t N>
     Matrix<T,M,N> operator+( const Matrix<T,M,N> &m1, const Matrix<T,M,N> &m2 ){
-        Matrix<T,M,N> mat = Matrix();
+        Matrix<T,M,N> mat = Matrix<T,M,N>();
         for(int row=0;row<M;row++)
         {
             for(int col=0;col<N;col++)
@@ -110,9 +179,9 @@ namespace aline
         }
         return mat;
     }
-    template <class T,class M,class N>
+    template <class T,size_t M,size_t N>
     Matrix<T,M,N> operator-( const Matrix<T,M,N> &m ){
-        Matrix<T,M,N> mat = Matrix();
+        Matrix<T,M,N> mat = Matrix<T,M,N>();
         for(int row=0;row<M;row++)
         {
             for(int col=0;col<N;col++)
@@ -122,9 +191,9 @@ namespace aline
         }
         return mat;
     }
-    template <class T,class M,class N>
+    template <class T,size_t M,size_t N>
     Matrix<T,M,N> operator-( const Matrix<T,M,N> &m1, const Matrix<T,M,N> &m2 ){
-        Matrix<T,M,N> mat = Matrix();
+        Matrix<T,M,N> mat = Matrix<T,M,N>();
         for(int row=0;row<M;row++)
         {
             for(int col=0;col<N;col++)
@@ -134,9 +203,9 @@ namespace aline
         }
         return mat;
     }
-    template <class T,class M,class N>
+    template <class T,size_t M,size_t N>
     Matrix<T,M,N> operator*( const T &scalar, const Matrix<T,M,N> &m ){
-     Matrix<T,M,N> mat = Matrix(m);
+     Matrix<T,M,N> mat = Matrix<T,M,N>(m);
         for(int row=0;row<M;row++)
         {
             for(int col=0;col<N;col++)
@@ -146,21 +215,26 @@ namespace aline
         }
         return mat;
     }
-    template <class T,class M,class N>
+    template <class T,size_t M,size_t N>
     Matrix<T,M,N> operator*( const Matrix<T,M,N> &m, const T &scalar ){
         return m * scalar;
     }
-    template <class T,class M,class N>
+    template <class T,size_t M,size_t N>
     Vector<T,M> operator*( const Matrix<T,M,N> &m, const Vector<T,N> &v){
-        Vector<T,M> mult = Vector();
-        if(M == N)
+        Vector<T,M> mult = Vector<T,M>();
+        for(int i=0;i<M;i++)
         {
-            for(int )
+            mult[i] = 0;
+            for(int j =0; j<N;j++)
+            {
+                mult[i] += m.mat[i][j] * v.vec[j];
+            }
         }
+        return mult;
     }
-    template <class T,class M,class N,class O>
+    template <class T,size_t M,size_t N,size_t O>
     Matrix<T,M,O> operator*( const Matrix<T,M,N> &m1, const Matrix<T,N,O> &m2 ){
-        Matrix<T,M,O> mat = Matrix();
+        Matrix<T,M,O> mat = Matrix<T,M,O>();
         T sum = 0;
         for(int i = 0;i<M;i++)
         {
@@ -176,17 +250,17 @@ namespace aline
         }
         return mat;
     }
-    template <class T,class M,class N>
+    template <class T,size_t M,size_t N>
     Matrix<T,M,N> operator/( const Matrix<T,M,N> & m, const T & s ){
         return m* (1/s);
     }
-    template <class T,class M,class N>
-    Matrix<T,M,N> to_string( const Matrix<T,M,N> &m ){
-
+    template <class T,size_t M,size_t N>
+    std::string to_string( const Matrix<T,M,N> &m ){
+        return "";
     }
-    template <class T,class M,class N>
+    template <class T,size_t M,size_t N>
     Matrix<T,M,N> transpose( const Matrix<T,M,N> &m ){
-        Matrix<T,N,M> mat = Matrix();
+        Matrix<T,N,M> mat = Matrix<T,M,N>();
         for(int row=0;row<N;row++)
         {
             for(int col=0;col<M;col++)
@@ -196,5 +270,13 @@ namespace aline
         }
         return mat;
     }
+    /*
+    template <class T,size_t M,size_t N>
+	std::ostream &operator <<(std::ostream &s, const Matrix<T,M,N> &v)
+	{
+		s <<  "La chaine de taille  <<: " ;
+		s << endl;
+		return s;
+	}*/
 }
 #endif

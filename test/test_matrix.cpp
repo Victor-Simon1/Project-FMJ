@@ -33,12 +33,10 @@ int test_constructors()
   Mat33i a;
   Mat33i b { {0, 1, 2}, {3, 4, 5}, {6, 7, 8} };
   Mat33i c = a;
-  //c[0][1] = 3;
-  //c[1][1] = 4;
-  //c[2][1] = 5;
+  c[0][1] = 3;
+  c[1][1] = 4;
+  c[2][1] = 5;
   Mat33i d = { {6} };
-  std::cout <<"pas err "<< b<<std::endl;
-  std::cout <<"pas err "<< d<<std::endl;
   TestVector test_vec
   {
     {"a.at( 0 ) == Vec3i {0,0,0}", a.at( 0 ) == Vec3i {0,0,0} },
@@ -60,7 +58,6 @@ int test_constructors()
     {"d.at( 1,1 ) == 0", d.at( 1,1 ) == 0 },
     {"d.at( 2,2 ) == 0", d.at( 2,2 ) == 0 },
   };
-std::cout <<"pas err"<<std::endl;
 
   try
   {
@@ -69,7 +66,6 @@ std::cout <<"pas err"<<std::endl;
     ++failures;
   }  
   catch( ... ) {}
-  std::cout <<"pas err2"<<std::endl;
   try
   {
     int v = d.at( 0,-1 );
@@ -78,7 +74,6 @@ std::cout <<"pas err"<<std::endl;
   }  
   
   catch( ... ) {}
-  std::cout <<"pas err3"<<std::endl;
   try
   {
     Vec3i v = d.at( 3 );
@@ -86,7 +81,6 @@ std::cout <<"pas err"<<std::endl;
     ++failures;
   }  
   catch( ... ) {}
-  std::cout <<"pas err4"<<std::endl;
   try
   {
     int v = d.at( 0,3 );
@@ -194,7 +188,7 @@ int test_nearly_equal()
 int test_operator_output()
 {
     std::cout << "Testing operator<<( ostream, Matrix )\n";
-    /*
+    
     std::vector<Mat33r> v
       { { {}, { 0, 0, 1 }, {} }
       , { {}, { .5, .5, .5 }, {} }
@@ -221,7 +215,7 @@ int test_operator_output()
         { .5*sqrt(2.0), .5*-sqrt(2.0), 1.0 }
     };
     std::cout << m << std::endl;
- */
+ 
     std::cout << std::endl;
 
     return 0;
@@ -293,7 +287,7 @@ int test_operator_mult3()
     , {b * a[2][0], b * a[2][1]} };
 
   TestVector test_vec { { "a * b == c", a * b == c } };
-
+  //return 0;
   return run_tests( "operator*( Matrix, Scalar )", test_vec );
 }
 
@@ -379,7 +373,7 @@ int main()
     failures += test_constructors();
     failures += test_at();
     failures += test_operator_subscript();
-    /*failures += test_operator_pluseq();
+    failures += test_operator_pluseq();
 
     failures += test_isnan();
     failures += test_nearly_equal();
@@ -391,7 +385,7 @@ int main()
     failures += test_operator_mult3();
     failures += test_operator_div();
     failures += test_to_string();
-    failures += test_transpose();*/
+    failures += test_transpose();
 
     failures += test_operator_output();
 

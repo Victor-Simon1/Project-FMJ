@@ -5,12 +5,15 @@ using namespace aline;
 using namespace std;
 int main()
 {
-    Matrix<int,2,2> m {{2,2},{2,2}};
+    /*Matrix<int,2,2> m {{2,2},{2,2}};
     std::cout <<m;
     Matrix<int,2,2> a = m;
-    std::cout <<a.at(0,0);
- 
-    /*
+    std::cout <<a.at(0,0);*/
+    Vector<float,2ul> a  { 1, 2 };
+    Vector<float,2ul> b  { 1.0000001, 2 };
+    Vector<float,2ul> b2 { 1.00000018, 2 };
+    std::cout <<nearly_equal(a,b2)<< "allo";
+        /*
     Vector<int,5> v;
     cout << "success" << endl;
     cout << v;

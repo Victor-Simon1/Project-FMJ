@@ -170,6 +170,20 @@ namespace aline
     template <class T,size_t M,size_t N>
     bool nearly_equal(Matrix<T,M,N> m1,Matrix<T,M,N> m2)
     {
+        for (int i = 0; i < M; i++)
+		{
+            for (int j = 0; j < N; j++)
+			{
+				const float epsilon = std::numeric_limits<float>::epsilon();
+				T value =std::fabs(m1.mat[i][j]-m2.mat[i][j]);
+				T max = std::max(std::abs(m1.mat[i][j]),std::abs(m2.mat[i][j]));
+
+				if(value  > max*epsilon)
+				{
+					return false;
+				}
+			}
+        }
         return true;
     }
     template <class T,size_t M,size_t N>
@@ -369,13 +383,5 @@ namespace aline
         }
         return mat;
     }
-    /*
-    template <class T,size_t M,size_t N>
-	std::ostream &operator <<(std::ostream &s, const Matrix<T,M,N> &v)
-	{
-		s <<  "La chaine de taille  <<: " ;
-		s << endl;
-		return s;
-	}*/
 }
 #endif

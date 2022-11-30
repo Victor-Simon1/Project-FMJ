@@ -5,6 +5,8 @@
 #include <vector>
 #include <cmath>
 #include <iostream>
+#include <sstream>
+#include <string>
 using namespace std;
 namespace aline
 {
@@ -15,9 +17,11 @@ namespace aline
     {
     public:
         //T **mat
-        vector<vector<T>> mat;
+        //vector<vector<T>> mat;
+        Vector<Vector<T,N>,M> mat;
         Matrix(){
             //mat =vector<vector<T>>();
+            /*
             for(int i=0;i<M;i++)
             {
                 vector<T> v1;
@@ -26,7 +30,8 @@ namespace aline
                     v1.push_back(0);
                 }
                 mat.push_back(v1);
-            }  
+            }  */
+            
         }
         Matrix(std::initializer_list<std::initializer_list<T>> list)
         {
@@ -62,71 +67,92 @@ namespace aline
                     c++;
                 }
                 l++;
-            }   */
-            for(int i=0;i<M;i++)
-            {
-                vector<T> v1;
-                for(int i=0;i<N;i++)
-                {
-                    v1.push_back(0);
-                }
-                mat.push_back(v1);
-            }  
+            }  */ 
+           /*/*/
+           Vector<T,N> v;
+           int i= 0;
+           for(auto vect:list)
+           {
+                
+              //  for(T value:vect)
+                //{
+                    
+                    v= Vector<T,N>(vect);
+                    //std::cout << "init" << v<< std::endl;
+                    mat.vec[i] = v;
+                    i++;
+                    //std::cout << "mat" << mat << std::endl;
+               // }
+           }
         }
         Matrix(const Matrix<T,M,N> &m)
         {
+
             
-            mat =vector<vector<T>>();
-            for(vector<T> v : m.mat)
+            mat =Vector<Vector<T,N>,M>();
+            int i=0,j=0;
+            for( i=0;i<M;i++)
             {
-                
-                vector<T> temp;
+                for(j=0;j<N;j++)
+                {
+                  mat.vec[i][j] = m.mat.vec[i][j];  
+                }
+            }
+            /*
+            for(Vector<T,N> v : m.mat.vec)
+            {
+                for(T value:v)
+                    mat.vec[i][++j] = value;
+                i++;
+                /*
                 for(T value: v)
                 {
                     
                     temp.push_back(value);
                 }
                 mat.push_back(temp);
-            }
-            std::cout << "Fin" << std::endl;
+            }*/
+           // std::cout << "Fin" << std::endl;
         }
 
         Vector<T,N> at(size_t row)
         {
             if((row>=M) || (row<0)) throw runtime_error("Index non conforme");
-            Vector<T,N> vect;
+           /* Vector<T,N> vect;
             for(int i =0;i<N;i++)
             {
-                vect.vec[i] = mat[row][i];
-            }
-            return vect;
+                vect.vec[i] = mat.vec[row].vec[i];
+            }*/
+            return mat.vec[row];
         }
 
         T at(size_t row,size_t col)
         {
             if(row>=M || row<0) throw runtime_error("Index non conforme");
             if(col>=N || col<0) throw runtime_error("Index non conforme");
-            return mat[row][col];
+            //std::cout <<row << " "<< col << " " <<mat.vec[row][col] <<std::endl;
+            return mat.vec[row][col];
         }
         Vector<T,N> operator[]( size_t index ) const
         {
-            std::cout <<"la";
-            Vector<T,N> vect;
+            //std::cout <<"la";
+           /* Vector<T,N> vect;
             for(int i =0;i<N;i++)
             {
+                std::cout <<"la";
                 vect.vec[i] = mat[index][i];
-            }
-            return vect;
+            }*/
+            return mat.vec[index];
         }
         Vector<T,N> &operator[]( size_t index ) 
         {
-            std::cout <<"ici";
-            Vector<T,N> vect;
+          //  std::cout <<"ici";
+           /* Vector<T,N> vect;
            for(int i =0;i <=N;i++)
             {
                 vect.vec[i] = mat[index][i];
-            }
-            return vect;
+            }*/
+            return mat.vec[index];
         }
         Matrix<T,M,N> &operator+=( const Matrix<T,M,N> & m)
         {
@@ -192,6 +218,7 @@ namespace aline
     }
     template <class T,size_t M, size_t N>
     std::ostream& operator<<(std::ostream &out, const Matrix<T,M,N> &m ){
+        std::cout << "Matrice de taille (" << M <<","<<N<<")"<<std::endl;
         for(int row=0;row<M;row++)
             {
                 out <<"{";
@@ -292,6 +319,29 @@ namespace aline
     }
     template <class T,size_t M,size_t N>
     std::string to_string( const Matrix<T,M,N> &m ){
+        std::string s;
+        s.append("s3 == (");
+        std::ostringstream strs;
+
+        for(int i=0;i<M;i++)
+        {
+            s.append("(");
+            for(int j=0;j<N;j++)
+            {
+                if(!(j==N-1))
+                {
+                    strs << m.mat.vec[i][j];
+                   // std::string str =;
+                    s.append( strs.str());
+                    strs.flush();
+                    s.append(", ");
+                }
+            }
+            s.append(")");
+        }
+
+        s.append(")");
+        std::cout << s << std::endl;
         return "";
     }
     template <class T,size_t M,size_t N>

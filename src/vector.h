@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <float.h>
+#include <limits>  
 namespace aline
 {
 	template <class T,size_t N>
@@ -52,7 +54,7 @@ namespace aline
 		}
 		T at(size_t index) const
 		{
-			if (index > N || index < 0)
+			if (index >= N || index < 0)
 			{
 				throw std::runtime_error("Aled");
 			}
@@ -119,17 +121,36 @@ namespace aline
 		}
 		template <class T,size_t N> bool is_unit(const Vector<T, N>& v)
 		{
-			std::cout <<"La norme est : "<< v.norm() -1.0<<std::endl;
+			//std::cout <<"La norme est : "<< v.norm() -1.0<<std::endl;
 			
-			if (v.norm() == 1.0) return true;
+			if (v.norm() -1 < 0.0001) return true;
 			return false;
 		}
 		template <class T,size_t N> bool nearly_equal(const Vector<T, N>& v1, const Vector<T, N>& v2)
 		{
+			
 			for (int i = 0; i < N; i++)
 			{
-				if(fabs(v1.vec[i] - v2.vec[i])>0.000001) return false;
+				/*
+				float diff = fabs(v1.vec[i] - v1.vec[i]);
+				T A = fabs(v1.vec[i]);
+				T B = fabs(v2.vec[i]);
+				float largest = (B > A) ? B : A;
+
+    			if (diff <= largest *FLT_EPSILON )
+        			return true;*/
+				const float epsilon = std::numeric_limits<float>::epsilon();
+				T value =std::abs(v1.vec[i]-v2.vec[i]);
+				//T max = 0.01*std::max(std::abs(v1.vec[i]),std::abs(v2.vec[i]));
+				std::cout <<( value > epsilon) << value << " : " << epsilon <<std::endl;
+				if(value> epsilon)
+				{
+					//std::cout << value << " : " << max <<std::endl;
+					return false;
+				}
+				//if(fabs(v1.vec[i] - v2.vec[i])>0.000001) return false;
 			}
+
 			return true;
 		}
 		

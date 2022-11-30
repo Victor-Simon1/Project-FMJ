@@ -173,11 +173,23 @@ namespace aline
         return true;
     }
     template <class T,size_t M,size_t N>
-    Matrix<T,M,N> inverse( const Matrix<T,M,N> & )
+    float findDeterminant(Matrix<T,M,N> m){
+        float det=0; // here det is the determinant of the matrix.
+        for(int r = 0; r < N; r++){
+            det = det + (m.mat[0][r] * (m.mat[1][(r+1)%3] * m.mat[2][(r+2)%3] - m.mat[1][(r+2)%3] * m.mat[2][(r+1)%3]));
+        }
+        return det;
+    }
+    template <class T,size_t M,size_t N>
+    Matrix<T,M,N> inverse( const Matrix<T,M,N> & m)
     {
         if(N != M)return NAN;
-        Matrix<T,M,N> m;
-
+          for(int r = 0; r < 3; r++){
+            for(int c = 0; c < 3; c++){
+                cout<<((m.mat[(c+1)%3][(r+1)%3] * m.mat[(c+2)%3][(r+2)%3]) - (m.mat[(c+1)%3][(r+2)%3] * m.mat[(c+2)%3][(r+1)%3]))<<"\t";
+            }
+            cout<<endl;
+        }
         return m;
 
     }
@@ -280,7 +292,7 @@ namespace aline
     }
     template <class T,size_t M,size_t N>
     Matrix<T,M,N> operator*( const Matrix<T,M,N> &m, const T &scalar ){
-        return m * scalar;
+        return  scalar * m;
     }
     template <class T,size_t M,size_t N>
     Vector<T,M> operator*( const Matrix<T,M,N> &m, const Vector<T,N> &v){
@@ -315,12 +327,12 @@ namespace aline
     }
     template <class T,size_t M,size_t N>
     Matrix<T,M,N> operator/( const Matrix<T,M,N> & m, const T & s ){
-        return m* (1/s);
+        return (1/s) * m;
     }
     template <class T,size_t M,size_t N>
     std::string to_string( const Matrix<T,M,N> &m ){
         std::string s;
-        s.append("s3 == (");
+        s.append("(");
         std::ostringstream strs;
 
         for(int i=0;i<M;i++)
@@ -328,21 +340,22 @@ namespace aline
             s.append("(");
             for(int j=0;j<N;j++)
             {
+                s.append( std::to_string(m.mat.vec[i][j]));
                 if(!(j==N-1))
                 {
-                    strs << m.mat.vec[i][j];
-                   // std::string str =;
-                    s.append( strs.str());
-                    strs.flush();
                     s.append(", ");
                 }
             }
             s.append(")");
+            if(!(i==N-1))
+            {
+                s.append(", ");
+            }
         }
 
         s.append(")");
-        std::cout << s << std::endl;
-        return "";
+        //std::cout << s << std::endl;
+        return s;
     }
     template <class T,size_t M,size_t N>
     Matrix<T,M,N> transpose( const Matrix<T,M,N> &m ){

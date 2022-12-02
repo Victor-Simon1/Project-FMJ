@@ -5,15 +5,19 @@ using namespace aline;
 using namespace std;
 int main()
 {
-    /*Matrix<int,2,2> m {{2,2},{2,2}};
+    std::cout << "Test on matrix"<< std::endl;
+    Matrix<int,2,2> m {{2,2},{2,2}};
     std::cout <<m;
     Matrix<int,2,2> a = m;
-    std::cout <<a.at(0,0);*/
-    Vector<float,2ul> a  { 1, 2 };
-    Vector<float,2ul> b  { 1.0000001, 2 };
-    Vector<float,2ul> b2 { 1.00000018, 2 };
-    std::cout <<nearly_equal(a,b2)<< "allo";
-        /*
+    //std::cout <<a.at(0,0);
+
+    Matrix<int,3ul,3ul> isInversible {{2,3,8},{6,0,-3},{-1,3,2}};
+    Matrix<double,3,3> inverseMatrice {{1/15,2/15,-1/15},{-1/15,4/45,2/5},{2/15,-1/15,-2/15}};
+    
+    std::cout<< inverse(isInversible) << std::endl;
+    std::cout << "Test on vector"<< std::endl;
+
+
     Vector<int,5> v;
     cout << "success" << endl;
     cout << v;
@@ -38,6 +42,6 @@ int main()
     cout << "univt"<<endl;
     cout << unit_vector( v6 )<<endl;
     cout << norm(unit_vector( v6 ))<<endl;
-    cout << is_unit( unit_vector( v6 ))<<endl;*/
+    cout << is_unit( unit_vector( v6 ))<<endl;
     //cout << (is_unit( unit_vector( v1 ) ) == true);
 }

@@ -7,6 +7,10 @@
 #include <limits>  
 namespace aline
 {
+	using Vec2i = Vector<int,2ul>;
+	using Vec2r = Vector<real,3ul>;
+	using uint = unsigned int;
+	using real = double;
 	template <class T,size_t N>
 	class Vector
 	{
@@ -16,9 +20,9 @@ namespace aline
 		//Constructors
 		Vector()
 		{
-			vec =   std::vector<T>();
+			vec = std::vector<T>();
 			T base = T();
-			for(int i=0;i<N;i++)
+			for(size_t i=0;i<N;i++)
 				vec.push_back(base);
 		}
 		Vector(std::initializer_list<T> l)
@@ -30,7 +34,7 @@ namespace aline
 		Vector(const Vector<T, N>& v)
 		{
 			vec = std::vector<T>();
-			for (int i = 0; i < N; i++)
+			for (size_t i = 0; i < N; i++)
 			{
 				vec.push_back( v.vec[i]);
 			}
@@ -61,7 +65,7 @@ namespace aline
 		}
 		Vector<T, N>& operator+=(const Vector<T, N>& v)
 		{
-			for (int i = 0; i < N; i++)
+			for (size_t i = 0; i < N; i++)
 			{
 				vec[i] = vec[i] + v.vec[i];
 			}
@@ -77,24 +81,30 @@ namespace aline
 		template <class T,size_t N> Vector<T, N> cross(const Vector<T, N>& v1, const Vector<T, N>& v2)
 		{
 			if (N < 3) throw std::runtime_error("Less than 3");
+			if(isnan(v1) || isnan(v2)) throw std::runtime_error("Nan value in vector");
 			Vector<T, N> crossproduct = Vector<T,N>();
 			
-			/*for (int i = 0; i < N; i++)
+			int idx1 = 1,idx2=2;
+			for(size_t i =0;i <N;i++)
 			{
-				if (i < 3) crossproduct.vec[i] = v1.vec[N-i-1] * v2.vec[N-i] - v1.vec[N-i] * v2.vec[N-i-1];
+				if(i <3)
+				{
+					crossproduct.vec[i] =v1.vec[idx1] * v2.vec[idx2] - v1.vec[idx2] * v2.vec[idx1];
+					idx1++;
+					idx2++;
+					if(idx1>2)idx1=0;
+					if(idx2>2)idx2=0;
+				}
 				else crossproduct.vec[i] = 0;
-			}*/
-
-			crossproduct.vec[0] = v1.vec[2] * v2.vec[2] - v2.vec[2] * v1.vec[1];
-			crossproduct.vec[1] = v1.vec[2] * v2.vec[0] - v2.vec[0] * v1.vec[2];
-			crossproduct.vec[2] = v1.vec[0] * v2.vec[1] - v2.vec[1] * v1.vec[0];
-			//std::cout << crossproduct.vec[0] << std::endl
+				
+			}
+	
 			return crossproduct;
 		}
 		template <class T,size_t N> T dot(const Vector<T, N>& v1, const Vector<T, N>& v2)
 		{
 			T sum = T();
-			for (int i = 0; i < N; i++)
+			for (size_t i = 0; i < N; i++)
 			{
 				sum += v1.vec[i] * v2.vec[i];
 			}
@@ -102,7 +112,7 @@ namespace aline
 		}
 		template <class T,size_t N> bool isnan(const Vector<T,N>& v)
 		{
-			for (int i = 0; i < N; i++)
+			for (size_t i = 0; i < N; i++)
 			{
 				if (std::isnan(v.vec[i])) return true;
 			}
@@ -115,7 +125,7 @@ namespace aline
 		}
 		template <class T,size_t N> bool nearly_equal(const Vector<T, N>& v1, const Vector<T, N>& v2)
 		{	
-			for (int i = 0; i < N; i++)
+			for (size_t i = 0; i < N; i++)
 			{
 				const float epsilon = std::numeric_limits<float>::epsilon();
 				T value =std::fabs(v1.vec[i]-v2.vec[i]);
@@ -131,7 +141,7 @@ namespace aline
 		
 		template <class T,size_t N> bool operator==(const Vector<T, N>& v1, const Vector<T, N>& v2)
 		{
-			for (int i = 0; i < N; i++)
+			for (size_t i = 0; i < N; i++)
 			{
 				if(v1.vec[i] != v2.vec[i]) return false;
 			}
@@ -139,7 +149,7 @@ namespace aline
 		}
 		template <class T,size_t N> bool operator!=(const Vector<T, N>& v1, const Vector<T, N>& v2)
 		{
-			for (int i = 0; i < N; i++)
+			for (size_t i = 0; i < N; i++)
 			{
 				if(v1.vec[i] != v2.vec[i]) return false;
 			}
@@ -149,15 +159,15 @@ namespace aline
 		{
 			out << "vecteur de taille " <<  v.vec.size()<<std::endl;
 			out << "{ ";
-			for(int i = 0;i< v.vec.size();i++)
-				out << v.vec[i]<< " ";
+			for(size_t i = 0;i< v.vec.size();i++)
+				out << v.vec[i]<< ",";
 			out <<"}" <<std::endl;
 			return out;
 		}
 		template <class T,size_t N> Vector<T, N> operator+(const Vector<T, N>& v1, const Vector<T, N>& v2)
 		{
 			Vector<T,N> add = Vector<T,N>();
-			for(int i =0;i<N;i++)
+			for(size_t i =0;i<N;i++)
 			{
 				add[i] = v1.vec[i] + v2.vec[i];
 			}
@@ -166,7 +176,7 @@ namespace aline
 		template <class T,size_t N> Vector<T, N> operator-(const Vector<T, N>& v) 
 		{
 			Vector<T,N> negation = Vector<T,N>();
-			for(int i=0;i<N;i++)
+			for(size_t i=0;i<N;i++)
 			{
 				negation.vec[i] = -v.vec[i];
 			}
@@ -175,7 +185,7 @@ namespace aline
 		template <class T,size_t N> Vector<T, N> operator-(const Vector<T, N>& v1, const Vector<T, N>& v2)
 		{
 			Vector<T,N> sub = Vector<T,N>();
-			for(int i =0;i<N;i++)
+			for(size_t i =0;i<N;i++)
 			{
 				sub[i] = v1.vec[i] - v2.vec[i];
 			}
@@ -184,7 +194,7 @@ namespace aline
 		template <class T,size_t N> Vector<T, N> operator*(const T& scalarValue, const Vector<T, N>& v)
 		{
 			Vector<T,N> scalar = Vector<T,N>();
-			for(int i =0;i<N;i++)
+			for(size_t i =0;i<N;i++)
 			{
 				scalar[i] = scalarValue * v.vec[i];
 			}
@@ -204,7 +214,7 @@ namespace aline
 		template <class T,size_t N> Vector<T, N> operator*(const Vector<T, N>& v1, const Vector<T, N>& v2)
 		{
 			Vector<T,N> scalar = Vector<T,N>();
-			for(int i =0;i<N;i++)
+			for(size_t i =0;i<N;i++)
 			{
 				scalar[i] = v1.vec[i] * v2.vec[i];
 			}
@@ -223,15 +233,24 @@ namespace aline
 		}
 		template <class T,size_t N> std::string to_string(const Vector<T, N>& v)
 		{
+			std::string s;
+			for(size_t i=0;i<N;i++)
+            {
+                s.append( std::to_string(v.vec[i]));
+                if(!(i==N-1))
+                {
+                    s.append(", ");
+                }
+            }
 			return "Vector of size " ;
 		}
 		template <class T,size_t N> Vector<T, N> unit_vector(const Vector<T, N>& v)
 		{
-			Vector<T,N> unit = Vector<T,N>(v);
-			for(int i= 0;i<N;i++)
+			/*Vector<T,N> unit = Vector<T,N>(v);
+			for(size_t i= 0;i<N;i++)
 			{
 				unit[i] /= v.sq_norm();
-			}
+			}*/
 			return v * (1/v.norm());
 		}
 		template <class T,size_t N> T norm(const Vector<T, N>& v)

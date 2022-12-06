@@ -1,5 +1,5 @@
 #include "vector.h"
-#include <color.h>
+#include "minwin/src/color.h"
 class Vertex
 {
 public:

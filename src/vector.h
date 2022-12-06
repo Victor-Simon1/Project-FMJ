@@ -7,8 +7,6 @@
 #include <limits>  
 namespace aline
 {
-	using Vec2i = Vector<int,2ul>;
-	using Vec2r = Vector<real,3ul>;
 	using uint = unsigned int;
 	using real = double;
 	template <class T,size_t N>
@@ -77,7 +75,8 @@ namespace aline
 			return sqrt(norm());
 		}
 	};
-
+	using Vec2i = Vector<int,2ul>;
+	using Vec2r = Vector<real,3ul>;
 		template <class T,size_t N> Vector<T, N> cross(const Vector<T, N>& v1, const Vector<T, N>& v2)
 		{
 			if (N < 3) throw std::runtime_error("Less than 3");

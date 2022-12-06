@@ -7,7 +7,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-using namespace std;
+
 namespace aline
 {
 
@@ -25,7 +25,7 @@ namespace aline
         {
            Vector<T,N> v;
            int i= 0;
-           for(auto vect:list)
+           for(std::initializer_list<T> vect:list)
            {
                 v= Vector<T,N>(vect);
                 mat.vec[i] = v;
@@ -47,14 +47,14 @@ namespace aline
 
         Vector<T,N> at(size_t row)
         {
-            if((row>=M) || (row<0)) throw runtime_error("Index non conforme");
+            if((row>=M) || (row<0)) throw std::runtime_error("Index non conforme");
             return mat.vec[row];
         }
 
         T at(size_t row,size_t col)
         {
-            if(row>=M || row<0) throw runtime_error("Index non conforme");
-            if(col>=N || col<0) throw runtime_error("Index non conforme");
+            if(row>=M || row<0) throw std::runtime_error("Index non conforme");
+            if(col>=N || col<0) throw std::runtime_error("Index non conforme");
 
             return mat.vec[row][col];
         }
@@ -102,72 +102,67 @@ namespace aline
 
     template <typename T, size_t M,size_t N>
     Matrix<double,M,N> inverse(const Matrix<T,M,N> &m1){
-   Matrix<double,M,N> inverseMatrix;
-   Matrix<double,M,N> mat;
-   double max = 0, found = -1;
+        Matrix<double,M,N> inverseMatrix;
+        Matrix<double,M,N> mat;
+        double max = 0, found = -1;
 
-   for(size_t u=0; u<N; u++){
-      for(size_t v=0; v<N; v++){
-        mat[u][v] = (double)m1[u][v];
-         if(u==v){
-            inverseMatrix[u][v] = 1;
-         }
-      }
-   }
-
-   for(size_t j=0; j<N; j++){
-        max = 0;
-        found = -1;
-        for(size_t i=j; i<M; i++){
-            if(fabs(mat[i][j]) >= max)
-            {
-                max = fabs(mat[i][j]);
-                found = i;
+        for(size_t u=0; u<N; u++){
+            for(size_t v=0; v<N; v++){
+                mat[u][v] = (double)m1[u][v];
+                if(u==v){
+                    inverseMatrix[u][v] = 1;
+                }
             }
         }
-        if(found == -1){
-            return inverseMatrix;
-        }
-        size_t i= found;
-        if(found!=j)
-        {
-            Vector<double,N> temp = Vector<double,N>(mat[i]);
-            Vector<double,N> temp2 = Vector<double,N>(inverseMatrix[i]);
-            for(size_t c=0;c<N;c++)
-            {
-                mat[i][c] = mat[j][c];
-                mat[j][c] = temp[c];
 
-                inverseMatrix[i][c] = inverseMatrix[j][c];
-                inverseMatrix[j][c] = temp2[c];
-            }
-            i = j;
-        }
-        std::cout << "mat1"<<mat << std::endl;
-        std::cout << "inverse1"<<inverseMatrix<< std::endl;
-        double pivot = 1/mat[i][j];
-        std::cout << "pivot :"<<pivot<<std::endl;
-        std::cout << i << " : " << j<<std::endl;
-        for(size_t c=0;c<N;c++)
-        {
-            mat[j][c] *= pivot;
-            inverseMatrix[j][c] *= pivot;
-             
-        }
-        std::cout << "mat2"<<mat << std::endl;
-        std::cout << "inverse2"<<inverseMatrix<< std::endl;
-        double pivot2 ;
-        for(size_t r=0; r<N; r++){
-            if(r!=j)
-            {
-                pivot2= - mat[r][j];
-                mat[r] +=  mat[j] * pivot2;
-                inverseMatrix[r] += inverseMatrix[j] * pivot2;
+        for(size_t j=0; j<N; j++){
+                max = 0;
+                found = -1;
+                for(size_t i=j; i<M; i++){
+                    if(fabs(mat[i][j]) >= max)
+                    {
+                        max = fabs(mat[i][j]);
+                        found = i;
+                    }
+                }
+                if(found == -1){
+                    return inverseMatrix;
+                }
+                size_t i= found;
+                if(found!=j)
+                {
+                    Vector<double,N> temp = Vector<double,N>(mat[i]);
+                    Vector<double,N> temp2 = Vector<double,N>(inverseMatrix[i]);
+                    for(size_t c=0;c<N;c++)
+                    {
+                        mat[i][c] = mat[j][c];
+                        mat[j][c] = temp[c];
 
-            }
-        }
-        std::cout << "mat"<<mat << std::endl;
-        std::cout << "inverse"<<inverseMatrix<< std::endl;
+                        inverseMatrix[i][c] = inverseMatrix[j][c];
+                        inverseMatrix[j][c] = temp2[c];
+                    }
+                    i = j;
+                }
+                double pivot = 1/mat[i][j];
+
+                for(size_t c=0;c<N;c++)
+                {
+                    mat[j][c] *= pivot;
+                    inverseMatrix[j][c] *= pivot;
+                    
+                }
+
+                double pivot2 ;
+                for(size_t r=0; r<N; r++){
+                    if(r!=j)
+                    {
+                        pivot2= - mat[r][j];
+                        mat[r] +=  mat[j] * pivot2;
+                        inverseMatrix[r] += inverseMatrix[j] * pivot2;
+
+                    }
+                }
+
       
    }
    return inverseMatrix;
@@ -209,7 +204,7 @@ namespace aline
                 {
                     out << m.mat[row][col] <<"," ;
                 }
-                out<< "}" << endl;
+                out<< "}" << std::endl;
             }
         return out;
     }

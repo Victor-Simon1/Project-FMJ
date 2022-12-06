@@ -7,12 +7,12 @@ public:
     minwin::Window window;
     real Sh;//screen height
     real Sw;//screen width
-
+    std::vector<Shape> listShape;
     Scene();
 
     void add_shape(const Shape &shape)
     {
-
+        listShape.push_back(shape);
     }
 
     void initialise()
@@ -24,12 +24,23 @@ public:
 
     void run()
     {
+        while(true)
+        {
+            for(int i =0;i<listShape.size();i++)
+            {
 
+            }
+
+            //
+            if(c == "X") break;
+        }
+        
     }
 
     void shutdown()
     {
-        window.close()
+        listShape.clear();
+        window.close();
     }
 }
 
@@ -78,3 +89,16 @@ void draw_line( const Vec2r & v0, const Vec2r & v1 ) const
     }
 }
 
+ void draw_wireframe_triangle( const Vec2r & v0
+, const Vec2r & v1
+, const Vec2r & v2 ) const
+{
+
+}
+
+void draw_filled_triangle( const Vec2r & v0
+, const Vec2r & v1
+, const Vec2r & v2 ) const
+{
+    
+}

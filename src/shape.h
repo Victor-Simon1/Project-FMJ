@@ -1,5 +1,10 @@
 #include "vector.h"
-#include "minwin/src/color.h"
+#include "color.h"
+
+using uint = unsigned int;
+using real = double;
+using Vec2i = Vector<int,2ul>;
+using Vec2r = Vector<real,3ul>;
 class Vertex
 {
 public:
@@ -10,8 +15,7 @@ public:
         vert = c;
         intensity = h;
     }
-}
-
+};
 
 class Face
 {
@@ -22,7 +26,7 @@ public:
     {
 
     }
-}
+};
 
 class Shape
 {
@@ -50,4 +54,4 @@ public:
     {
         return faces;
     }
-}
+};

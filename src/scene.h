@@ -1,14 +1,23 @@
+#ifndef SCENE_H
+#define SCENE_H
 #include "shape.h"
+#include "vector.h"
+using namespace aline;
+using namespace minwin;
+using uint = unsigned int;
+using real = double;
+using Vec2i = Vector<int,2ul>;
+using Vec2r = Vector<real,3ul>;
 
-
-class Scene()
+class Scene
 {
 public:
-    minwin::Window window;
+    Window window;
     real Sh;//screen height
     real Sw;//screen width
     std::vector<Shape> listShape;
     Scene();
+    friend void draw_line( const Vec2r & v0, const Vec2r & v1 ) const;
 
     void add_shape(const Shape &shape)
     {
@@ -42,7 +51,7 @@ public:
         listShape.clear();
         window.close();
     }
-}
+};
 
 Vec2r viewport_to_canvas( const Vec2r & point ) const
 {
@@ -102,3 +111,5 @@ void draw_filled_triangle( const Vec2r & v0
 {
     
 }
+
+#endif

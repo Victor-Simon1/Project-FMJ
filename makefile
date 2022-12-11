@@ -13,7 +13,7 @@ BIN_DIR := bin
 # Other directories.
 SRC_DIR := src
 OBJ_DIR := build
-TEST_SRC_DIR := test/test_base
+TEST_SRC_DIR := test
 
 # File extensions.
 SRC_EXT := cpp
@@ -30,7 +30,7 @@ else ifeq ($(OS), Darwin)
     INC := -Isrc/
     LIBS := 
 endif
-CFLAGS = -LSDL2 -std=c++11 -Wall -O $(CDEBUG) $(INC)
+CFLAGS = -std=c++11 -Wall -Lminwin/bin -O $(CDEBUG) $(INC) -Iminwin/include
 LDFLAGS = -g
 
 # Find all source file names.
@@ -44,16 +44,18 @@ TEST_OBJ_FILES := $(patsubst $(TEST_SRC_DIR)/%.$(SRC_EXT), $(OBJ_DIR)/%.$(OBJ_EX
 # Generate test binary file names from test source file names.
 TEST_BIN_FILES := $(patsubst $(TEST_SRC_DIR)/%.$(SRC_EXT), $(BIN_DIR)/%, $(TEST_SRC_FILES))
 
-
 $(OBJ_FILES): $(OBJ_DIR)/%.$(OBJ_EXT): $(SRC_DIR)/%.$(SRC_EXT)
 	mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 # Generate executable test files.
-
-
 .PHONY: all
 all: $(TEST_BIN_FILES)
+
+# Create test_vector
+$(BIN_DIR)/my_test: $(OBJ_DIR)/my_test.o
+	mkdir -p $(BIN_DIR)
+	$(CC) $^ $(LDFLAGS) -o $@
 
 # Create test_vector
 $(BIN_DIR)/test_vector: $(OBJ_DIR)/test_vector.o
@@ -65,14 +67,10 @@ $(BIN_DIR)/test_matrix: $(OBJ_DIR)/test_matrix.o
 	mkdir -p $(BIN_DIR)
 	$(CC) $^ $(LDFLAGS) -o $@
 
-$(BIN_DIR)/my_test: $(OBJ_DIR)/my_test.o
+# Create test_drawshapes
+$(BIN_DIR)/test_windows: $(OBJ_DIR)/test_windows.o
 	mkdir -p $(BIN_DIR)
-	$(CC) $^ $(LDFLAGS) -o $@
-$(BIN_DIR)/my_windows: $(OBJ_DIR)/my_windows.o
-	mkdir -p $(BIN_DIR)
-	$(CC) $^ -Lsrc/minwin/bin $(LDFLAGS) -o $@
-
-
+	$(CC) $^ -Lminwin/bin $(LDFLAGS) -o $@ -lminwin
 
 $(TEST_OBJ_FILES): $(OBJ_DIR)/%.$(OBJ_EXT): $(TEST_SRC_DIR)/%.$(SRC_EXT) 
 	mkdir -p $(OBJ_DIR)
@@ -85,4 +83,3 @@ clean:
 	$(RM) $(OBJ_FILES)
 	$(RM) $(TEST_BIN_FILES)
 	$(RM) $(TEST_OBJ_FILES)
-

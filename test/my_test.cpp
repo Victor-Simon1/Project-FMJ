@@ -1,21 +1,23 @@
-#include "vector.h"
-#include <cmath>
-#include "matrix.h"
+//#include "../src/vector.h"
+//#include <cmath>
+#include "../src/matrix.h"
+#include <iostream>
 using namespace aline;
 using namespace std;
 int main()
 {
-    std::cout << "Test on matrix"<< std::endl;
+   
+    cout << "Test on matrix"<< endl;
     Matrix<int,2,2> m {{2,2},{2,2}};
-    std::cout <<m;
+    cout <<m;
     Matrix<int,2,2> a = m;
     //std::cout <<a.at(0,0);
 
     Matrix<int,3ul,3ul> isInversible {{2,3,8},{6,0,-3},{-1,3,2}};
     Matrix<double,3,3> inverseMatrice {{1/15,2/15,-1/15},{-1/15,4/45,2/5},{2/15,-1/15,-2/15}};
     
-    std::cout<< inverse(isInversible) << std::endl;
-    std::cout << "Test on vector"<< std::endl;
+    cout<< inverse(isInversible) << endl;
+    cout << "Test on vector"<< endl;
 
 
     Vector<int,5> v;
@@ -43,5 +45,5 @@ int main()
     cout << unit_vector( v6 )<<endl;
     cout << norm(unit_vector( v6 ))<<endl;
     cout << is_unit( unit_vector( v6 ))<<endl;
-    //cout << (is_unit( unit_vector( v1 ) ) == true);
+    //cout << (is_unit( unit_vector( v1 ) ) == tre);
 }

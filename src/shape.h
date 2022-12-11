@@ -1,10 +1,12 @@
+#ifndef SHAPE_H
+#define SHAPE_H
 #include "vector.h"
-#include "color.h"
-
-using uint = unsigned int;
-using real = double;
-using Vec2i = Vector<int,2ul>;
-using Vec2r = Vector<real,3ul>;
+#include "../minwin/include/color.h"
+using namespace minwin;
+//using uint = unsigned int;
+//using real = double;
+//using Vec2i = Vector<int,2ul>;
+//using Vec2r = Vector<real,3ul>;
 class Vertex
 {
 public:
@@ -22,7 +24,7 @@ class Face
 public:
     uint v0,v1,v2;
     Color color;
-    Face(uint v0,uint v1,uint v2;const Color &color):v0(v0),v1(v1),v2(v2),color(color)
+    Face(uint v0,uint v1,uint v2,const Color &color):v0(v0),v1(v1),v2(v2),color(color)
     {
 
     }
@@ -34,11 +36,11 @@ public:
     std::string name;
     std::vector<Vertex> vertices;
     std::vector<Face> faces;
-    Shape( const std::string & name, const std::vector<Vertex> & vertices, const std::vector<Face> & faces)
+    Shape( const std::string & pName, const std::vector<Vertex> & pVertices, const std::vector<Face> & pFaces)
     {
-        name = name;
-        vertices=vertices;
-        faces=faces;
+        name = pName;
+        vertices=pVertices;
+        faces=pFaces;
     }
 
     std::string get_name()
@@ -55,3 +57,5 @@ public:
         return faces;
     }
 };
+
+#endif

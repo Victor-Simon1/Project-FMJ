@@ -2,12 +2,13 @@
 #define SCENE_H
 #include "shape.h"
 #include "vector.h"
+#include <bits/stdc++.h>
 using namespace aline;
 using namespace minwin;
 using uint = unsigned int;
 using real = double;
 using Vec2i = Vector<int,2ul>;
-using Vec2r = Vector<real,3ul>;
+using Vec2r = Vector<real,2ul>;
 
 class Scene
 {
@@ -51,6 +52,7 @@ public:
         listShape.clear();
         window.close();
     }
+    friend Vec2r viewport_to_canvas( const Vec2r & point ) const;
 };
 
 Vec2r viewport_to_canvas( const Vec2r & point ) const
@@ -68,7 +70,7 @@ Vec2r viewport_to_canvas( const Vec2r & point ) const
 }
 Vec2i canvas_to_window( const Vec2r & point ) const
 {
-    Vec2r pointInWindows;
+    Vec2i pointInWindows;
     real Cw = Sw;
     real Ch = Sh;
     real Vw = 2;
@@ -82,11 +84,11 @@ void draw_line( const Vec2r & v0, const Vec2r & v1 ) const
 {
     real dx = v1[0] - v0[0];
     real dy = v1[1] - v0[1];
-    real ax = dx <<1;
-    real ay = dy <<1;
-    real d = ay - ax;
+    int ax = (int)dx <<1;
+    int ay = (int)dy <<1;
+    int d = ay - ax;
 
-    for(real x = v0[0],y =v0[0];x<=v1[0],++x)
+    for(real x = v0[0],y =v0[0];x<=v1[0];++x)
     {
         window.put_pixel(x,y);
         if(d>=0)

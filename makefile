@@ -30,7 +30,7 @@ else ifeq ($(OS), Darwin)
     INC := -Isrc/
     LIBS := 
 endif
-CFLAGS = -std=c++11 -Wall -O $(CDEBUG) $(INC)
+CFLAGS = -LSDL2 -std=c++11 -Wall -O $(CDEBUG) $(INC)
 LDFLAGS = -g
 
 # Find all source file names.
@@ -68,6 +68,9 @@ $(BIN_DIR)/test_matrix: $(OBJ_DIR)/test_matrix.o
 $(BIN_DIR)/my_test: $(OBJ_DIR)/my_test.o
 	mkdir -p $(BIN_DIR)
 	$(CC) $^ $(LDFLAGS) -o $@
+$(BIN_DIR)/my_windows: $(OBJ_DIR)/my_windows.o
+	mkdir -p $(BIN_DIR)
+	$(CC) $^ -Lsrc/minwin/bin $(LDFLAGS) -o $@
 
 
 

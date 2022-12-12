@@ -11,6 +11,7 @@ using namespace minwin;
 //using real = double;
 //using Vec2i = Vector<int,2ul>;
 //using Vec2r = Vector<real,2ul>;
+//export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/home/victor/Bureau/Vector/minwin/bin
 
 class Scene
 {
@@ -104,6 +105,7 @@ public:
             // clear window
             
             window.display();
+            //break;
         }
         shutdown();
     }
@@ -112,16 +114,16 @@ public:
         listShape.clear();
         window.close();
     }
-    Vec2r viewport_to_canvas( const Vec2r & point ) 
+Vec2r viewport_to_canvas( const Vec2r & point ) 
 {
     Vec2r pointInCanvas;
     real Cw = Sw;
     real Ch = Sh;
     real Vw = 2;
-    real Vh = (Sh/Sw) *Vw;
+    real Vh = (real)((real)Sh/(real)Sw) *Vw;
     pointInCanvas[0] = (point[0] * Cw) / Vw;
     pointInCanvas[1] = (point[1] * Ch) / Vh;
-
+    //std::cout << point[1] <<" "  <<Ch<<" " <<  << std::endl; 
     return pointInCanvas;
 
 }
@@ -131,41 +133,62 @@ Vec2i canvas_to_window( const Vec2r & point )
     real Cw = Sw;
     real Ch = Sh;
     real Vw = 2;
-    real Vh = (Sh/Sw) *Vw;
+    real Vh = (real)(Sh/Sw) *Vw;
     pointInWindows[0] =  Cw  / 2 +  point[0];
     pointInWindows[1] = Ch /2 - point[1];
 
     return pointInWindows;
 }
 
- void draw_wireframe_triangle( const Vec2r & v0
-, const Vec2r & v1
-, const Vec2r & v2 ) 
-{
+ void draw_wireframe_triangle(  Vec2r & v0
+,  Vec2r & v1
+,  Vec2r & v2 ) 
+{   
+    //std::cout << viewport_to_canvas(v0)[1]<<" "<< v1[1]<< " "<< v2[1]<<std::endl;
+    /*if(v1[1]<v0[1])std::swap(v1,v0);
+    if(v2[1]<v0[1])std::swap(v2,v0);
+    if(v2[1]<v1[1])std::swap(v2,v1);*/
   draw_line(viewport_to_canvas(v0),viewport_to_canvas(v1));
 draw_line(viewport_to_canvas(v1),viewport_to_canvas(v2));
         draw_line(viewport_to_canvas(v2),viewport_to_canvas(v0));
 }
+
+void draw_line( const Vec2r & v0, const Vec2r & v1 )
+{
+ real a = (v1[1] - v0[1])/ (v1[0]- v0[0]);
+ real b = v0[1]- v0[0] * a;
+ int y = 0;
+ for(int x =0;x<v1[0];x++)
+ {
+    y = a *x +b;
+    //std::cout << x << " " << (v1[1] ) << " " << (v1[0]- v0[0]) << std::endl;
+    window.put_pixel(x,y,WHITE);
+ }
+
+}
+/*
 void draw_line( const Vec2r & v0, const Vec2r & v1 )
 {
     real dx = v1[0] - v0[0];
     real dy = v1[1] - v0[1];
     int ax = (int)dx <<1;
     int ay = (int)dy <<1;
-    int d = ay - ax;
+    int d = 2*ay - ax;
+    std::cout << "x"<< v0[0]<<" " << v1[0]<< std::endl;
 
-    for(real x = v0[0],y =v0[0];x<=v1[0];++x)
+    for(real x = v0[0],y =v0[1];x<=v1[0];++x)
     {
         window.put_pixel(x,y,WHITE);
         //std::cout << "put"<<std::endl;
         if(d>=0)
         {
             ++y;
+            
             d = d - ax;
         }
-        d = d + ay;
+        d = d + 2*ay;
     }
-}
+}*/
  class QuitButtonBehavior : public minwin::IButtonBehavior
   {
     public:
@@ -187,7 +210,13 @@ void draw_line( const Vec2r & v0, const Vec2r & v1 )
   
 
 };
-
+/*
+void swap(const Vec2r &v0,const Vec2r &v1)
+{
+    Vec2r temp = v0;
+    v0 = v1;
+    v1 = temp;
+}*/
 void Scene::QuitButtonBehavior::on_click() const { this->owner.running = false; }
 
 void Scene::QuitKeyBehavior::on_press() const   { this->owner.running = false; }

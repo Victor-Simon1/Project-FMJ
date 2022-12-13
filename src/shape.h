@@ -12,6 +12,7 @@ class Vertex
 public:
     Vec2r vert;
     real intensity;
+    Vertex(){}
     Vertex(const Vec2r &c,real h)
     {
         vert = c;

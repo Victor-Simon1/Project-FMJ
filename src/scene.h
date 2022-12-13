@@ -33,9 +33,9 @@ public:
     {
         window.set_title( "MinWin Test" );
         window.set_width( 600 );
-        window.set_height( 1000 );
+        window.set_height( 600 );
         Sh = 600;
-        Sw =1000;
+        Sw =600;
         window.register_quit_behavior( new QuitButtonBehavior( *this ) );
         window.register_key_behavior( KEY_X, new QuitKeyBehavior( *this ) );
         window.register_key_behavior( KEY_Q, new QuitKeyBehavior( *this ) );
@@ -75,26 +75,21 @@ public:
         faces.push_back(Face(2,3,4,WHITE));
         Shape shape = Shape("name",vertices,faces);
         add_shape(shape);
+        //std::cout << listShape[0].get_faces().size() << std::endl;
         while( this->running )
         {
             // process keyboard inputs, etc.
             window.process_input();
             window.clear();
             window.set_draw_color( WHITE );
-            /*for( int i { 10 }; i < 590; ++i )
-                window.put_pixel( i, 80 );
-
-            for( int i { 10 }; i < 590; ++i )
-                // set the color for each pixel (it is a bit slower)
-                window.put_pixel( i, 150, WHITE);*/
-            
+            Vertex v1,v2,v3;
             for(int i =0;i<listShape.size();i++)
             {
                 for(int j=0;j<listShape[i].get_faces().size();j++)
                 {
-                    Vertex v1 = listShape[i].get_vertices()[listShape[i].get_faces()[j].v0];
-                    Vertex v2 = listShape[i].get_vertices()[listShape[i].get_faces()[j].v1];
-                    Vertex v3 = listShape[i].get_vertices()[listShape[i].get_faces()[j].v2];
+                    v1 = listShape[i].get_vertices()[listShape[i].get_faces()[j].v0];
+                    v2 = listShape[i].get_vertices()[listShape[i].get_faces()[j].v1];
+                    v3 = listShape[i].get_vertices()[listShape[i].get_faces()[j].v2];
                     draw_wireframe_triangle(v1.vert,v2.vert,v3.vert);
                     //draw_line(viewport_to_canvas(v1.vert),viewport_to_canvas(v2.vert));
                     //draw_line(viewport_to_canvas(v1.vert),viewport_to_canvas(v3.vert));
@@ -105,7 +100,7 @@ public:
             // clear window
             
             window.display();
-            //break;
+           // break;
         }
         shutdown();
     }
@@ -123,51 +118,116 @@ Vec2r viewport_to_canvas( const Vec2r & point )
     real Vh = (real)((real)Sh/(real)Sw) *Vw;
     pointInCanvas[0] = (point[0] * Cw) / Vw;
     pointInCanvas[1] = (point[1] * Ch) / Vh;
-    //std::cout << point[1] <<" "  <<Ch<<" " <<  << std::endl; 
+  //  std::cout << point[0] << " " << point[1]<< " : "; 
+   // std::cout << pointInCanvas[0] << " " << pointInCanvas[1]<< " : "; 
+    
     return pointInCanvas;
 
 }
 Vec2i canvas_to_window( const Vec2r & point ) 
 {
     Vec2i pointInWindows;
-    real Cw = Sw;
-    real Ch = Sh;
+    int Cw = Sw;
+    int Ch = Sh;
     real Vw = 2;
-    real Vh = (real)(Sh/Sw) *Vw;
-    pointInWindows[0] =  Cw  / 2 +  point[0];
-    pointInWindows[1] = Ch /2 - point[1];
-
+    real Vh = (real)((real)Sh/(real)Sw) *Vw;
+    pointInWindows[0] =  (Cw  << 1) +  point[0];
+    pointInWindows[1] = (Ch <<1) - point[1];
+   // std::cout << pointInWindows[0] << " " << pointInWindows[1]<< std::endl; 
+    
     return pointInWindows;
 }
 
- void draw_wireframe_triangle(  Vec2r & v0
-,  Vec2r & v1
-,  Vec2r & v2 ) 
+ void draw_wireframe_triangle(  Vec2r &v0,Vec2r &v1,Vec2r &v2 ) 
 {   
     //std::cout << viewport_to_canvas(v0)[1]<<" "<< v1[1]<< " "<< v2[1]<<std::endl;
     /*if(v1[1]<v0[1])std::swap(v1,v0);
     if(v2[1]<v0[1])std::swap(v2,v0);
     if(v2[1]<v1[1])std::swap(v2,v1);*/
-  draw_line(viewport_to_canvas(v0),viewport_to_canvas(v1));
-draw_line(viewport_to_canvas(v1),viewport_to_canvas(v2));
-        draw_line(viewport_to_canvas(v2),viewport_to_canvas(v0));
+   // std::cout << "clac"<<std::endl;
+    Vec2i v0i = canvas_to_window(viewport_to_canvas(v0));
+    Vec2i v1i = canvas_to_window(viewport_to_canvas(v1));
+    Vec2i v2i = canvas_to_window(viewport_to_canvas(v2));
+    //std::cout << "ciic"<<std::endl;
+    draw_line(v0i,v1i);
+    draw_line(v1i,v2i);
+    draw_line(v2i,v0i);
 }
 
-void draw_line( const Vec2r & v0, const Vec2r & v1 )
+void draw_line(  Vec2i & v0,  Vec2i & v1 )
 {
- real a = (v1[1] - v0[1])/ (v1[0]- v0[0]);
- real b = v0[1]- v0[0] * a;
- int y = 0;
- for(int x =0;x<v1[0];x++)
- {
-    y = a *x +b;
-    //std::cout << x << " " << (v1[1] ) << " " << (v1[0]- v0[0]) << std::endl;
-    window.put_pixel(x,y,WHITE);
- }
-
+    real a =0;
+    real dx = (real)v1[0] - (real)v0[0];
+    real dy = (real)v1[1] - (real)v0[1];
+    //std::cout << dx << dy<<std::endl;
+    if(std::abs(dx)>std::abs(dy))
+    {
+         if(v1[0] == v0[0])
+            a = dy / std::abs(dy);
+        else{
+            if(v1[0] < v0[0]){
+                std::swap(v0[0],v1[0]);
+                std::swap(v0[1],v1[1]);
+            }
+            a = dy / dx;
+        }
+        int y = v0[1];
+        for(int x =0;x<=v1[0];x++)
+        {
+        
+            //std::cout << x << " " << (v1[1] ) << " " << (v1[0]- v0[0]) << std::endl;
+            window.put_pixel(x,y,WHITE);
+            y =(real)y +a;
+        }
+    }
+    else
+    {
+        if(dy == 0)
+        {
+            a = dx / std::abs(dx);
+        }
+        else{
+            if(v1[1] < v0[1]){
+                std::cout << "avant :" << v0[0] << "/"<<v1[0]<<std::endl;
+                std::swap(v0[0],v1[0]);
+                std::swap(v0[1],v1[1]);
+                std::cout << "apres :" << v0[0] << "/"<<v1[0]<<std::endl;
+                //std::swap(v0,v1);
+            }
+            a = dx / dy;
+        }
+        //std::cout <<"a:"  <<a << std::endl;
+        int x = v0[0];
+        for(int y =0;y<=v1[1];y++)
+        {
+        
+            //std::cout << x << " " << (v1[1] ) << " " << (v1[0]- v0[0]) << std::endl;
+            window.put_pixel(x,y,WHITE);
+            x =(real)x +a;
+            //std::cout <<"x :"<<x<<std::endl;
+        }
+    }
+   
 }
 /*
-void draw_line( const Vec2r & v0, const Vec2r & v1 )
+void draw_line( const Vec2i & v0, const Vec2i & v1 )
+{
+    //std::cout << (v1[0]- v0[0])<<std::endl;
+    
+    real a = (v1[1] - v0[1])/ (v1[0]+1- v0[0]);
+    std::cout << (v1[0]- v0[0])<< " " << 1750-1500 <<std::endl;
+    real b = v0[1]- v0[0] * a;
+    int y = 0;
+    for(int x =0;x<v1[0];x++)
+    {
+        y = a *x +b;
+        //std::cout << x << " " << (v1[1] ) << " " << (v1[0]- v0[0]) << std::endl;
+        window.put_pixel(x,y,WHITE);
+    }
+
+}*/
+/*
+void draw_line( const Vec2i & v0, const Vec2i & v1 )
 {
     real dx = v1[0] - v0[0];
     real dy = v1[1] - v0[1];

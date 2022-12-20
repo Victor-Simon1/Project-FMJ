@@ -100,7 +100,7 @@ public:
             // clear window
             
             window.display();
-           // break;
+            //break;
         }
         shutdown();
     }
@@ -116,10 +116,11 @@ Vec2r viewport_to_canvas( const Vec2r & point )
     real Ch = Sh;
     real Vw = 2;
     real Vh = (real)((real)Sh/(real)Sw) *Vw;
+
     pointInCanvas[0] = (point[0] * Cw) / Vw;
     pointInCanvas[1] = (point[1] * Ch) / Vh;
-  //  std::cout << point[0] << " " << point[1]<< " : "; 
-   // std::cout << pointInCanvas[0] << " " << pointInCanvas[1]<< " : "; 
+    std::cout << point[0] << " " << point[1]<< " : "; 
+    std::cout << pointInCanvas[0] << " " << pointInCanvas[1]<< " : "; 
     
     return pointInCanvas;
 
@@ -131,9 +132,9 @@ Vec2i canvas_to_window( const Vec2r & point )
     int Ch = Sh;
     real Vw = 2;
     real Vh = (real)((real)Sh/(real)Sw) *Vw;
-    pointInWindows[0] =  (Cw  << 1) +  point[0];
-    pointInWindows[1] = (Ch <<1) - point[1];
-   // std::cout << pointInWindows[0] << " " << pointInWindows[1]<< std::endl; 
+    pointInWindows[0] =  (Cw  / (real)2 ) +  point[0];
+    pointInWindows[1] = (Ch /(real)2) - point[1];
+    std::cout << pointInWindows[0] << " " << pointInWindows[1]<< std::endl; 
     
     return pointInWindows;
 }
@@ -153,79 +154,82 @@ Vec2i canvas_to_window( const Vec2r & point )
     draw_line(v1i,v2i);
     draw_line(v2i,v0i);
 }
+void draw_filled_triangle( const Vec2r & v0, const Vec2r & v1, const Vec2r & v2 ) const
+{
+    Vec2i v0i = canvas_to_window(viewport_to_canvas(v0));
+    Vec2i v1i = canvas_to_window(viewport_to_canvas(v1));
+    Vec2i v2i = canvas_to_window(viewport_to_canvas(v2));
+    if(v1i<v0i)std::swap(v1i,v0i);
+    if(v2i<v0i)std::swap(v2i,v0i);
+    if(v2i<v1i)std::swap(v1i,v2i);
 
+    auto x02 = interpolate(v0i,v2i);
+    auto x01 = interpolate(v0i,v1i);
+    auto x12 = interpolate(v1i,v2i);
+
+    x01.pop_back();
+    x012 = concat(x01,x12);
+
+}
 void draw_line(  Vec2i & v0,  Vec2i & v1 )
 {
     real a =0;
-    real dx = (real)v1[0] - (real)v0[0];
-    real dy = (real)v1[1] - (real)v0[1];
+    int x0= v0[0],x1=v1[0],y0=v0[1],y1=v1[1];
+    real dx = (real)x1 - (real)x0;
+    real dy = (real)y1 - (real)y0;
     //std::cout << dx << dy<<std::endl;
     if(std::abs(dx)>std::abs(dy))
     {
-         if(v1[0] == v0[0])
-            a = dy / std::abs(dy);
+        if(dx == (real)0)
+            a = (real)dy / (real)std::abs(dy);
         else{
-            if(v1[0] < v0[0]){
-                std::swap(v0[0],v1[0]);
-                std::swap(v0[1],v1[1]);
+            if(x1 < x0){
+                std::swap(x0,x1);
+                std::swap(y0,y1);
             }
-            a = dy / dx;
+            
         }
-        int y = v0[1];
-        for(int x =0;x<=v1[0];x++)
+        a = (real)dy / (real)dx;
+        real y = y0;
+        for(int x =x0;x<=x1;x++)
         {
         
             //std::cout << x << " " << (v1[1] ) << " " << (v1[0]- v0[0]) << std::endl;
             window.put_pixel(x,y,WHITE);
-            y =(real)y +a;
+            y =(real)y +(real)a;
         }
     }
     else
     {
-        if(dy == 0)
+        if(dy == (real)0)
         {
-            a = dx / std::abs(dx);
+            a = (real)dx / (real)std::abs(dx);
         }
         else{
-            if(v1[1] < v0[1]){
-                std::cout << "avant :" << v0[0] << "/"<<v1[0]<<std::endl;
-                std::swap(v0[0],v1[0]);
-                std::swap(v0[1],v1[1]);
-                std::cout << "apres :" << v0[0] << "/"<<v1[0]<<std::endl;
+            if(y1 < y0){
+                //std::cout << "avant :" << v0[0] << "/"<<v1[0]<<std::endl;
+                std::swap(x0,x1);
+                std::swap(y0,y1);
+                //std::cout << "apres :" << v0[0] << "/"<<v1[0]<<std::endl;
                 //std::swap(v0,v1);
             }
-            a = dx / dy;
+            
         }
+        a = (real)dx / (real)dy;
         //std::cout <<"a:"  <<a << std::endl;
-        int x = v0[0];
-        for(int y =0;y<=v1[1];y++)
+        real x = x0;
+        for(int y =y0;y<=y1;y++)
         {
         
             //std::cout << x << " " << (v1[1] ) << " " << (v1[0]- v0[0]) << std::endl;
             window.put_pixel(x,y,WHITE);
-            x =(real)x +a;
+            x =(real)x +(real)a;
             //std::cout <<"x :"<<x<<std::endl;
         }
     }
    
 }
-/*
-void draw_line( const Vec2i & v0, const Vec2i & v1 )
-{
-    //std::cout << (v1[0]- v0[0])<<std::endl;
-    
-    real a = (v1[1] - v0[1])/ (v1[0]+1- v0[0]);
-    std::cout << (v1[0]- v0[0])<< " " << 1750-1500 <<std::endl;
-    real b = v0[1]- v0[0] * a;
-    int y = 0;
-    for(int x =0;x<v1[0];x++)
-    {
-        y = a *x +b;
-        //std::cout << x << " " << (v1[1] ) << " " << (v1[0]- v0[0]) << std::endl;
-        window.put_pixel(x,y,WHITE);
-    }
 
-}*/
 /*
 void draw_line( const Vec2i & v0, const Vec2i & v1 )
 {
@@ -235,18 +239,18 @@ void draw_line( const Vec2i & v0, const Vec2i & v1 )
     int ay = (int)dy <<1;
     int d = 2*ay - ax;
     std::cout << "x"<< v0[0]<<" " << v1[0]<< std::endl;
-
-    for(real x = v0[0],y =v0[1];x<=v1[0];++x)
+    real y = (real)v0[1];
+    for(int x = v0[0];x<=v1[0];++x)
     {
         window.put_pixel(x,y,WHITE);
         //std::cout << "put"<<std::endl;
         if(d>=0)
         {
-            ++y;
+            y = (real)y + (real)1;
             
-            d = d - ax;
+            d = (real)d - (real)ax;
         }
-        d = d + 2*ay;
+        d = (real)d + (real)2*(real)ay;
     }
 }*/
  class QuitButtonBehavior : public minwin::IButtonBehavior
@@ -284,11 +288,6 @@ void Scene::QuitKeyBehavior::on_release() const {} // does nothing
 
 
 /*
-void draw_filled_triangle( const Vec2r & v0
-, const Vec2r & v1
-, const Vec2r & v2 ) const
-{
-    
-}
+
 */
 #endif

@@ -3,6 +3,7 @@
 #include "vector.h"
 #include "shape.h"
 #include <vector>
+#include <algorithm>
 #include <bits/stdc++.h>
 #include "../minwin/include/window.h"
 using namespace aline;
@@ -154,22 +155,113 @@ Vec2i canvas_to_window( const Vec2r & point )
     draw_line(v1i,v2i);
     draw_line(v2i,v0i);
 }
+std::vector<int> concat(std::vector<int> v0,std::vector<int> v1)
+{
+    std::vector<int> v2 = v0;
+    for(int i = 0;i<v1.size();i++)
+    {
+        if(!(std::find(v2.begin(),v2.end(),v1[i])!=v2.end()))
+            v2.push_back(v1[i]);
+    }
+
+    return v2;
+}
 void draw_filled_triangle( const Vec2r & v0, const Vec2r & v1, const Vec2r & v2 ) const
 {
     Vec2i v0i = canvas_to_window(viewport_to_canvas(v0));
     Vec2i v1i = canvas_to_window(viewport_to_canvas(v1));
     Vec2i v2i = canvas_to_window(viewport_to_canvas(v2));
-    if(v1i<v0i)std::swap(v1i,v0i);
-    if(v2i<v0i)std::swap(v2i,v0i);
-    if(v2i<v1i)std::swap(v1i,v2i);
+    if(v1i[1]<v0i[1])std::swap(v1i,v0i);
+    if(v2i[1]<v0i[1])std::swap(v2i,v0i);
+    if(v2i[1]<v1i[1])std::swap(v1i,v2i);
 
-    auto x02 = interpolate(v0i,v2i);
-    auto x01 = interpolate(v0i,v1i);
-    auto x12 = interpolate(v1i,v2i);
+    auto x02 = interpolate(v0i[1],v0i[0],v2i[1],v2i[0]);
+    auto x01 = interpolate(v0i[1],v0i[0],v1i[1],v1i[0]);
+    auto x12 = interpolate(v1i[1],v1i[0],v2i[1],v2i[0]);
 
-    x01.pop_back();
+   // x01.pop_back();
+    auto x012 = concat(x01,x12);
+    std::vector<int> x_left,x_right,h_left,h_right;
+    auto m= floor(x012.size() / 2);
+    if(x02[m] <x012[m])
+    {
+        x_left = x02;
+        x_right = x012;
+    }
+    else
+    {
+        x_left = x012;
+        x_right = x02;
+    }
+
+    for(y = y0;y<= y1;y++)
+        for(x = x_left[y-y0];x<=x_right[y-y0];++x)
+            put_pixel(x,y,WHITE)
+
+    x01 = interpolate(v0i[1],v0i[0],v1i[1],v1i[0]);
+    auto h01 = interpolate(v0i[1],0,v2i[1],0);
+
+    x12 = interpolate(v1i[1],v1i[0],v2i[1],v2i[0]);
+    auto h12 = interpolate(v1i[1],0,v2i[1],0);
+
+    x02 = interpolate(v0i[1],v0i[0],v2i[1],v2i[0]);
+    auto h02 = interpolate(v0i[1],0,v2i[1],0);
+
+    //x01.pop_back();
     x012 = concat(x01,x12);
 
+   // h01.pop_back();
+    auto h012 = concat(h01,h12);
+
+    m = floor(x012.size() /2 );
+    if(x02[m] < x012[m])
+    {
+        x_left = x02;
+        h_left = h02;
+
+        x_right = x012;
+        h_right = h012;
+    }
+    else
+    {
+        x_left = x012;
+        h_left = h012;
+
+        x_right = x02;
+        h_right = h02;
+    }
+    auto color = 2;
+    for(int y = v0i[1];y<=v2i[1];++y)
+    {
+        auto x_l = x_left[y-v0i[1]];
+        auto x_r = x_right[y - v0i[1]];
+
+        auto h_segment = interpolate(x_l,h_left[y-v0i[1]],x_r,h_right[y-v0i[1]]);
+        for(int x = x_l;x<=x_r;++x)
+        {
+            auto shaded_color = color * h_segment[x-x_l];
+            window.put_pixel(x,y,WHITE);
+        }
+    }
+}
+
+std::vector<int> interpolate(int i0,int d0,int i1,int d1)
+{
+    std::vector<int> vec;
+    if(i0 == i1) 
+    {
+        vec.push_back(d0);
+        return vec;
+    }
+    real a = ((real)d0 - (real)d1) / ((real)i0 - (real)i1);
+    real d = d0;
+    
+    for(int i =i0;i<=i1;++i )
+    {
+        vec.push_back((int)d);
+        d = (real)d + (real)a;
+    }
+    return vec;
 }
 void draw_line(  Vec2i & v0,  Vec2i & v1 )
 {

@@ -7,17 +7,19 @@ using namespace minwin;
 //using real = double;
 //using Vec2i = Vector<int,2ul>;
 //using Vec2r = Vector<real,3ul>;
+template <class T>
 class Vertex
 {
 public:
-    Vec2r vert;
+    T vert;
     real intensity;
     Vertex(){}
-    Vertex(const Vec2r &c,real h)
+    Vertex(const T &c,real h)
     {
         vert = c;
         intensity = h;
     }
+    
 };
 
 class Face
@@ -31,13 +33,14 @@ public:
     }
 };
 
+template <class T>
 class Shape
 {
 public:
     std::string name;
-    std::vector<Vertex> vertices;
+    std::vector<Vertex<T>> vertices;
     std::vector<Face> faces;
-    Shape( const std::string & pName, const std::vector<Vertex> & pVertices, const std::vector<Face> & pFaces)
+    Shape( const std::string & pName, const std::vector<Vertex<T>> & pVertices, const std::vector<Face> & pFaces)
     {
         name = pName;
         vertices=pVertices;
@@ -48,7 +51,7 @@ public:
     {
         return name;
     }
-    std::vector<Vertex> get_vertices() const
+    std::vector<Vertex<T>> get_vertices() const
     {
         return vertices;
     }

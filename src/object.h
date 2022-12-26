@@ -17,7 +17,7 @@ public:
         scale = s;
     }
 
-    aline::Matrix<real,4> transform()
+    aline::Matrix<real,4,1> transform()
     {
 
     }

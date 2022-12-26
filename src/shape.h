@@ -19,7 +19,11 @@ public:
         vert = c;
         intensity = h;
     }
-    
+    Vertex(std::initializer_list<real> &c,real h)
+    {
+        vert = c;
+        intensity = h;
+    }
 };
 
 class Face
@@ -30,6 +34,13 @@ public:
     Face(uint v0,uint v1,uint v2,const Color &color):v0(v0),v1(v1),v2(v2),color(color)
     {
 
+    }
+
+    Face(std::string v0,std::string v1,std::string v2,const Color &color):color(color)
+    {
+        this->v0 = std::stoi(v0);
+        this->v1 = std::stoi(v1);
+        this->v2 = std::stoi(v2);
     }
 };
 
@@ -46,7 +57,7 @@ public:
         vertices=pVertices;
         faces=pFaces;
     }
-
+    Shape(){}
     std::string get_name()
     {
         return name;

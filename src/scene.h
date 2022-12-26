@@ -44,15 +44,16 @@ public:
             std::cerr << "erreur fichier"<<std::endl;
             exit(0);
         }
+        /// v;
         std::string line;
         std::string type;
         std::vector<std::string> value;
-        Shape sh;
+        Shape<Vec3r> sh;
         std::vector<Vertex<Vec3r>> vertices;
         std::vector<Face> faces;
         while(getline(f,line))
         {
-            char* ptr = strtok(line.c_str()," ");//v ou f
+            char* ptr = strtok((char*)line.c_str()," ");//v ou f
             type = ptr;
             while(ptr != nullptr)
             {
@@ -61,11 +62,12 @@ public:
             }
              if(type == "v")
             {
-                vertices.push_back(Vertex({value[0],value[1],value[2]},0));
+                Vec3r v {atof(value[0].c_str()),atof(value[1].c_str()),atof(value[2].c_str())};
+                vertices.push_back(Vertex<Vec3r>(v,0.0));
             }
             else
             {
-                face.push_back(Face({value[0],value[1],value[2]},0))
+                faces.push_back(Face(value[0],value[1],value[2],WHITE));
             }
         }
        
@@ -110,7 +112,7 @@ public:
 
     void run()
     {   
-        std::vector<Vertex<Vec2r> vertices;
+        std::vector<Vertex<Vec2r>> vertices;
         Vec2r v {-1.0,0.0};
         Vec2r v1 {-0.5,-0.75};
         Vec2r v2 {0.5,-0.75};
@@ -129,7 +131,7 @@ public:
         faces.push_back(Face(1,2,4,WHITE));
         faces.push_back(Face(1,4,5,WHITE));
         faces.push_back(Face(2,3,4,WHITE));
-        Shape shape = Shape("name",vertices,faces);
+        Shape<Vec2r> shape = Shape<Vec2r>("name",vertices,faces);
         add_shape(shape);
         //std::cout << listShape[0].get_faces().size() << std::endl;
         while( this->running )
@@ -138,7 +140,7 @@ public:
             window.process_input();
             window.clear();
             window.set_draw_color( WHITE );
-            Vertex v1,v2,v3;
+            Vertex<Vec2r> v1,v2,v3;
             for(int i =0;i<listShape.size();i++)
             {
                 for(int j=0;j<listShape[i].get_faces().size();j++)

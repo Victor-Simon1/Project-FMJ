@@ -4,6 +4,7 @@
 #include "shape.h"
 #include "object.h"
 #include <vector>
+#include <sstream>
 #include <algorithm>
 #include <fstream>
 #include <bits/stdc++.h>
@@ -44,33 +45,43 @@ public:
             std::cerr << "erreur fichier"<<std::endl;
             exit(0);
         }
-        /// v;
         std::string line;
         std::string type;
-        std::vector<std::string> value;
+        std::string v1,v2,v3;
         Shape<Vec3r> sh;
         std::vector<Vertex<Vec3r>> vertices;
         std::vector<Face> faces;
         while(getline(f,line))
         {
-            char* ptr = strtok((char*)line.c_str()," ");//v ou f
-            type = ptr;
-            while(ptr != nullptr)
+            std::stringstream X(line);
+            getline(X,type,' ');
+            if(type == "v" || type == "f")
             {
-                ptr = strtok(nullptr," ");
-                value.push_back(ptr);
+                std::cout << type << std::endl;
+                if(type == "v")
+                {
+                    
+                    getline(X,v1,' ');
+                    getline(X,v2,' ');
+                    getline(X,v3,' ');
+                   // std::cout <<"slt";//atof(value[0].c_str())<<std::endl;
+                    Vec3r v {atof(v1.c_str()),atof(v2.c_str()),atof(v3.c_str())};
+                    //std::cout << v << std::endl;
+                    vertices.push_back(Vertex<Vec3r>(v,0.0));
+                    
+                }
+                else
+                {
+                    getline(X,v1,' ');
+                    getline(X,v2,' ');
+                    getline(X,v3,' ');
+                    std::cout << line <<std::endl;
+                    faces.push_back(Face(v1,v2,v3,WHITE));
+                }
             }
-             if(type == "v")
-            {
-                Vec3r v {atof(value[0].c_str()),atof(value[1].c_str()),atof(value[2].c_str())};
-                vertices.push_back(Vertex<Vec3r>(v,0.0));
-            }
-            else
-            {
-                faces.push_back(Face(value[0],value[1],value[2],WHITE));
-            }
+           
         }
-       
+         
         Object obj = Object(Shape<Vec3r>("",vertices,faces),{0,0,0},{0,0,0},{0,0,0});
         listObject.push_back(obj);
         f.clear();
@@ -112,47 +123,26 @@ public:
 
     void run()
     {   
-        std::vector<Vertex<Vec2r>> vertices;
-        Vec2r v {-1.0,0.0};
-        Vec2r v1 {-0.5,-0.75};
-        Vec2r v2 {0.5,-0.75};
-        Vec2r v3 {1.0,0.0};
-        Vec2r v4 {0.5,0.75};
-        Vec2r v5 {-0.5,0.75};
-        vertices.push_back(Vertex<Vec2r>(v,2.0));
-        vertices.push_back(Vertex<Vec2r>(v1,2.0));
-        vertices.push_back(Vertex<Vec2r>(v2,2.0));
-        vertices.push_back(Vertex<Vec2r>(v3,2.0));
-        vertices.push_back(Vertex<Vec2r>(v4,2.0));
-        vertices.push_back(Vertex<Vec2r>(v5,2.0));
+        load_obj_file("file/tetrahedron.obj");
 
-        std::vector<Face> faces;
-        faces.push_back(Face(0,1,5,WHITE));
-        faces.push_back(Face(1,2,4,WHITE));
-        faces.push_back(Face(1,4,5,WHITE));
-        faces.push_back(Face(2,3,4,WHITE));
-        Shape<Vec2r> shape = Shape<Vec2r>("name",vertices,faces);
-        add_shape(shape);
-        //std::cout << listShape[0].get_faces().size() << std::endl;
         while( this->running )
         {
             // process keyboard inputs, etc.
             window.process_input();
             window.clear();
             window.set_draw_color( WHITE );
-            Vertex<Vec2r> v1,v2,v3;
-            for(int i =0;i<listShape.size();i++)
+            Vertex<Vec3r> v1,v2,v3;
+            for(int i =0;i<listObject.size();i++)
             {
-                for(int j=0;j<listShape[i].get_faces().size();j++)
+                for(int j=0;j<listObject[i].sh.get_faces().size();j++)
                 {
-                    v1 = listShape[i].get_vertices()[listShape[i].get_faces()[j].v0];
-                    v2 = listShape[i].get_vertices()[listShape[i].get_faces()[j].v1];
-                    v3 = listShape[i].get_vertices()[listShape[i].get_faces()[j].v2];
-                    //draw_wireframe_triangle(v1.vert,v2.vert,v3.vert);
-                    draw_filled_triangle(v1.vert,v2.vert,v3.vert);
-                    //draw_line(viewport_to_canvas(v1.vert),viewport_to_canvas(v2.vert));
-                    //draw_line(viewport_to_canvas(v1.vert),viewport_to_canvas(v3.vert));
-                    //draw_line(viewport_to_canvas(v3.vert),viewport_to_canvas(v2.vert));
+                    v1 = listObject[i].sh.get_vertices()[listObject[i].sh.get_faces()[j].v0-1];
+                    v2 = listObject[i].sh.get_vertices()[listObject[i].sh.get_faces()[j].v1-1];
+                    v3 = listObject[i].sh.get_vertices()[listObject[i].sh.get_faces()[j].v2-1];
+                   // std::cout <<" jai mis dans les var"<< std::endl;
+                    draw_wireframe_triangle(v1.vert,v2.vert,v3.vert);
+                    //draw_filled_triangle(3Dto2d(v1.vert,v2.vert,v3.vert);
+
                 }
                
             }
@@ -168,6 +158,7 @@ public:
         listShape.clear();
         window.close();
     }
+
     Vec2r viewport_to_canvas( const Vec2r & point ) 
     {
         Vec2r pointInCanvas;
@@ -178,8 +169,6 @@ public:
 
         pointInCanvas[0] = (point[0] * Cw) / Vw;
         pointInCanvas[1] = (point[1] * Ch) / Vh;
-        //std::cout << point[0] << " " << point[1]<< " : "; 
-        //std::cout << pointInCanvas[0] << " " << pointInCanvas[1]<< " : "; 
         
         return pointInCanvas;
 
@@ -198,16 +187,17 @@ public:
         return pointInWindows;
     }
 
-    void draw_wireframe_triangle(  Vec2r &v0,Vec2r &v1,Vec2r &v2 ) 
+    void draw_wireframe_triangle(  Vec3r &v0,Vec3r &v1,Vec3r &v2 ) 
     {   
         //std::cout << viewport_to_canvas(v0)[1]<<" "<< v1[1]<< " "<< v2[1]<<std::endl;
         /*if(v1[1]<v0[1])std::swap(v1,v0);
         if(v2[1]<v0[1])std::swap(v2,v0);
         if(v2[1]<v1[1])std::swap(v2,v1);*/
     // std::cout << "clac"<<std::endl;
-        Vec2i v0i = canvas_to_window(viewport_to_canvas(v0));
-        Vec2i v1i = canvas_to_window(viewport_to_canvas(v1));
-        Vec2i v2i = canvas_to_window(viewport_to_canvas(v2));
+        real d = 0.5;
+        Vec2i v0i = canvas_to_window(/*viewport_to_canvas(*/projection2(v0,d))/*)*/;
+        Vec2i v1i = canvas_to_window(/*viewport_to_canvas(*/projection2(v1,d))/*)*/;
+        Vec2i v2i = canvas_to_window(/*viewport_to_canvas(*/projection2(v2,d))/*)*/;
         //std::cout << "ciic"<<std::endl;
         draw_line(v0i,v1i);
         draw_line(v1i,v2i);
@@ -303,12 +293,57 @@ public:
             {
                 //{ 255,255,255, 0 }
                 Color shaded_color = {color.r * h_segment[x-x_l],color.g * h_segment[x-x_l],color.b * h_segment[x-x_l],0};
-                std::cout << "shaded"<< to_string(shaded_color) << std::endl;
+                //std::cout << "shaded"<< to_string(shaded_color) << std::endl;
                 window.put_pixel(x,y,shaded_color);
             }
         }
     }
+    Vec2r projection(Vec3r &v)
+    {
+        Vec2r v1;
+        if(v[2] != 0.0){
+        v1[0] = (-0.5/ v[2]) * v[0];
+        v1[1] = (-0.5 / v[2]) * v[1];
+        }
+        else
+        {
+            v1[0] = v[0];
+            v1[1] =  v[1];
+        }
+        std::cout << v << std::endl;
+        std::cout << v1 << std::endl;
+        return v1;
 
+
+    }
+     Vec2r projection2(Vec3r &v,real d)
+    {
+        real Vw = 2.0;
+        real Vh = (Sh/(real)Sw) *Vw;
+        Vector<real,4> v1 {v[0],v[1],v[2],1.0};
+        Matrix<real,4,4> m  { {(real)Sw/Vw, 0.0, 0.0,0.0}, {0.0, (real)Sh/Vh, 0.0,0.0}, {0.0,0.0, 1.0, 0.0} ,{0.0,0.0,0.0,1.0}};
+        Matrix<real,4,4> m1  { {d, 0.0, 0.0,0.0}, {0.0,d, 0.0,0.0}, {0.0,0.0, 1.0, 0.0} ,{0.0,0.0,0.0,1.0}};
+       
+       Vector<real,4> v2 = m*m1*v1;
+       std::cout << v << std::endl;
+      
+       /* if(v[2] != 0.0){
+        v1[0] = (-0.5/ v[2]) * v[0];
+        v1[1] = (-0.5 / v[2]) * v[1];
+        }
+        else
+        {
+            v1[0] = v[0];
+            v1[1] =  v[1];
+        }
+        std::cout << v << std::endl;
+        std::cout << v1 << std::endl;*/
+        Vec2r v3 {v2[0],v2[1]};
+         std::cout << v3 << std::endl;
+        return v3;
+
+
+    }
     std::vector<real> interpolate(int i0,real d0,int i1,real d1)
     {
         std::vector<real> vec;

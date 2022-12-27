@@ -148,8 +148,8 @@ public:
                     v1 = listShape[i].get_vertices()[listShape[i].get_faces()[j].v0];
                     v2 = listShape[i].get_vertices()[listShape[i].get_faces()[j].v1];
                     v3 = listShape[i].get_vertices()[listShape[i].get_faces()[j].v2];
-                    draw_wireframe_triangle(v1.vert,v2.vert,v3.vert);
-                    //draw_filled_triangle(v1.vert,v2.vert,v3.vert);
+                    //draw_wireframe_triangle(v1.vert,v2.vert,v3.vert);
+                    draw_filled_triangle(v1.vert,v2.vert,v3.vert);
                     //draw_line(viewport_to_canvas(v1.vert),viewport_to_canvas(v2.vert));
                     //draw_line(viewport_to_canvas(v1.vert),viewport_to_canvas(v3.vert));
                     //draw_line(viewport_to_canvas(v3.vert),viewport_to_canvas(v2.vert));
@@ -230,19 +230,20 @@ public:
         Vec2i v1i = canvas_to_window(viewport_to_canvas(v1));
         Vec2i v2i = canvas_to_window(viewport_to_canvas(v2));
         int x0=v0i[0],y0=v0i[1],x1=v1i[0],y1=v1i[1],x2=v2i[0],y2=v2i[1];
-        if(v1i[1]<v0i[1]){std::swap(x0,x1);std::swap(y0,y1);}
-        if(v2i[1]<v0i[1]){std::swap(x0,x2);std::swap(y0,y2);}
-        if(v2i[1]<v1i[1]){std::swap(x2,x1);std::swap(y2,y1);}
-        std::cout << "Jai swap"<<std::endl;
+        if(y1<y0){std::swap(x0,x1);std::swap(y0,y1);}
+        if(y2<y0){std::swap(x0,x2);std::swap(y0,y2);}
+        if(y2<y1){std::swap(x2,x1);std::swap(y2,y1);}
+        //std::cout << "Jai swap"<<std::endl;
         auto x02 = interpolate(y0,x0,y2,x2);
-        auto x01 = interpolate(y0,x0,y1,y0);
+        auto x01 = interpolate(y0,x0,y1,x1);
         auto x12 = interpolate(y1,x1,y2,x2);
-        std::cout << "Jai interpolé"<<std::endl;
-    // x01.pop_back();
-        auto x012 = concat(x01,x12);
-        std::vector<int> x_left,x_right,h_left,h_right;
+        //std::cout << "Jai interpolé"<<std::endl;
+        x01.pop_back();
+        auto x012 = x01;//concat(x01,x12);
+        x012.insert(x012.end(),x12.begin(),x12.end());
+        std::vector<real> x_left,x_right,h_left,h_right;
         auto m= floor(x012.size() / 2);
-        std::cout << "Jai concat "<< x02.size() << std::endl;
+        //std::cout << "Jai concat "<< x02.size() << std::endl;
         if(x02[m] <x012[m])
         {
             x_left = x02;
@@ -253,41 +254,34 @@ public:
             x_left = x012;
             x_right = x02;
         }
-        std::cout << "J'ai xleft"<< std::endl;
+       // std::cout << "J'ai xleft"<< std::endl;
         for(int y = v0i[1];y<= v2i[1];y++)
         {
             //std::cout << "y : "<<y-v0i[1] <<std::endl;
             //std::cout << "y : "<<y << " " <<v1i[1]<< " "<<y - (int)v1i[1] <<std::endl;
-            if(y-(int)v1i[1]>0)
-            {
+            //if(y-(int)v1i[1]>0)
+           // {
                 for(int x = x_left[y-y0];x<=x_right[y-(int)y0];++x)
-                window.put_pixel(x,y,WHITE);
-            }
+                    window.put_pixel(x,y,RED);
+          //  }
             
         }
         //shaded
-        std::cout << "Jai put"<< std::endl;
         //x01 = interpolate(y0,x0,y1,x1);
-        auto h01 = interpolate(y0,1,y1,1);
-
+        auto h01 = interpolate(y0,1.0,y1,1.0);
         //x12 = interpolate(y1,x1,y2,x2);
-        auto h12 = interpolate(y1,1,y2,1);
-
+        auto h12 = interpolate(y1,1.0,y2,1.0);
         //x02 = interpolate(y0,x0,y2,x2);
-        auto h02 = interpolate(y0,1,y2,1);
-
-        //x01.pop_back();
+        auto h02 = interpolate(y0,1.0,y2,1.0);
        // x012 = concat(x01,x12);
-
-    // h01.pop_back();
-        auto h012 = concat(h01,h12);
-
+        h01.pop_back();
+        auto h012 = h01;//concat(h01,h12);
+         h012.insert(h012.end(),h12.begin(),h12.end());
        // m = floor(x012.size() /2 );
         if(x02[m] < x012[m])
         {
            // x_left = x02;
             h_left = h02;
-
             //x_right = x012;
             h_right = h012;
         }
@@ -295,28 +289,29 @@ public:
         {
           //  x_left = x012;
             h_left = h012;
-
            // x_right = x02;
             h_right = h02;
         }
-        auto color = 2;
+        Color color = RED;
         for(int y = y0;y<=y2;++y)
         {
             auto x_l = x_left[y-y0];
             auto x_r = x_right[y - y0];
             //std::cout << y - y0 << std::endl;
-           // auto h_segment = interpolate(x_l,h_left[y-y0],x_r,h_right[y-y0]);
+            auto h_segment = interpolate(x_l,h_left[y-y0],x_r,h_right[y-y0]);
             for(int x = x_left[y-y0];x<=x_right[y-y0];++x)
             {
-               // auto shaded_color = color * h_segment[x-x_l];
-                window.put_pixel(x,y,RED);
+                //{ 255,255,255, 0 }
+                Color shaded_color = {color.r * h_segment[x-x_l],color.g * h_segment[x-x_l],color.b * h_segment[x-x_l],0};
+                std::cout << "shaded"<< to_string(shaded_color) << std::endl;
+                window.put_pixel(x,y,shaded_color);
             }
         }
     }
 
-    std::vector<int> interpolate(int i0,int d0,int i1,int d1)
+    std::vector<real> interpolate(int i0,real d0,int i1,real d1)
     {
-        std::vector<int> vec;
+        std::vector<real> vec;
         if(i0 == i1) 
         {
             vec.push_back(d0);

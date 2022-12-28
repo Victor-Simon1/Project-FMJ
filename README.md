@@ -7,8 +7,10 @@ make all pour compiler tous les tests
 et make clean afin de nettoyer le répertoire 
 
 Pour les test contenant la bibliothéques minwin,
-il faut lancer la commande suivante 
+il faut lancer la commande suivante :
+
     - export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:<minwin>/bin
 
-Le(s) test(s) concerné(s) par cela sont:
+Le(s) test(s) concerné(s) par cela sont :
+
     - test/test_window

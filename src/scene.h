@@ -11,10 +11,7 @@
 #include "../minwin/include/window.h"
 using namespace aline;
 using namespace minwin;
-//using uint = unsigned int;
-//using real = double;
-//using Vec2i = Vector<int,2ul>;
-//using Vec2r = Vector<real,2ul>;
+
 //export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/home/victor/Bureau/Vector/minwin/bin
 
 enum Mode{WIREFRAME,FILLED};
@@ -59,15 +56,12 @@ public:
             getline(X,type,' ');
             if(type == "v" || type == "f")
             {
-               // std::cout << type << std::endl;
                 if(type == "v")
                 {    
                     getline(X,v1,' ');
                     getline(X,v2,' ');
                     getline(X,v3,' ');
-                   // std::cout <<"slt";//atof(value[0].c_str())<<std::endl;
                     Vec4r v { atof(v1.c_str()),atof(v2.c_str()),atof(v3.c_str()),1.0 };
-                    //std::cout << v << std::endl;
                     vertices.push_back(Vertex(v,0.0));
                 }
                 else
@@ -107,17 +101,13 @@ public:
         window.register_key_behavior( KEY_X, new QuitKeyBehavior( *this ) );
         window.register_key_behavior( KEY_Q, new QuitKeyBehavior( *this ) );
         window.register_key_behavior( KEY_SPACE, new QuitModeBehavior( *this ) );
-        //window.register_key_behavior( minwin::KEY_SPACE, new ChangeColorBehavior( *this ) );
-  
+
          // open window
         if( not window.open() )
         {
             std::cerr << "Couldn't open window.\n";
             return;
         }
-        
-        //Sh = window.get_height();
-        //Sw = window.get_width();
     }
 
     void run()
@@ -130,34 +120,23 @@ public:
             window.process_input();
             window.clear();
             window.set_draw_color( WHITE );
+            std::cout << "allo";
             Vertex v1,v2,v3;
-            //std::cout << "FPS : " << window.fps_info << std::endl;
             for(size_t i =0;i<listObject.size();i++)
             {
-                //std::cout << "i :"<< i << std::endl;
                 std::vector<Vertex> ver = listObject[i].get_vertices();
                 for(size_t k = 0;k<ver.size();k++)
                 {
-                  //  std::cout << "Base : " << Vec4r({ ver[k].vert[0],ver[k].vert[1],ver[k].vert[2], 1.0})<< std::endl;
                     Vec4r vect = listObject[i].transform() * Vec4r({ ver[k].vert[0],ver[k].vert[1],ver[k].vert[2], 1.0});
                     Vec2r proj = projection2(vect,1);
-                    //Vec2r proj = projection(vect);
-                   // std::cout << "vct"<<vect << std::endl;
-                   // std::cout << "proj"<<proj << std::endl;
                     ver[k].vert[0] = proj[0];
                     ver[k].vert[1] = proj[1];
                 }
-               // std::cout << "i :"<< i << std::endl;
                 for(size_t j=0;j<listObject[i].get_faces().size();j++)
                 {
-                 //   std::cout << "i :"<< i << std::endl;
                     v1 = ver[listObject[i].get_faces()[j].v0-1];
-                   // std::cout << "i :"<< i << std::endl;
                     v2 = ver[listObject[i].get_faces()[j].v1-1];
-                    //std::cout << "i :"<< i << std::endl;
                     v3 = ver[listObject[i].get_faces()[j].v2-1];
-                   // std::cout <<" jai mis dans les var"<< std::endl;
-                   //std::cout << "i :"<< i << std::endl;
                     switch(mode)
                     {
                         case WIREFRAME:
@@ -178,6 +157,7 @@ public:
     void shutdown()
     {
         listShape.clear();
+        //window.unregister_behaviors();
         window.close();
     }
 
@@ -202,8 +182,7 @@ public:
         int Ch = Sh;
         pointInWindows[0] =  (Cw  / (real)2 ) +  point[0];
         pointInWindows[1] = (Ch /(real)2) - point[1];
-        //std::cout << " CtoW : "<<pointInWindows[0] << " " << pointInWindows[1]<< std::endl; 
-        
+
         return pointInWindows;
     }
 
@@ -220,11 +199,11 @@ public:
         if(y1<y0){std::swap(x0,x1);std::swap(y0,y1);}
         if(y2<y0){std::swap(x0,x2);std::swap(y0,y2);}
         if(y2<y1){std::swap(x2,x1);std::swap(y2,y1);}
-        //std::cout << "Jai swap"<<std::endl;
+
         auto x02 = interpolate(y0,x0,y2,x2);
         auto x01 = interpolate(y0,x0,y1,x1);
         auto x12 = interpolate(y1,x1,y2,x2);
-        //std::cout << "Jai interpolé"<<std::endl;
+
         x01.pop_back();
         auto x012 = x01;
         x012.insert(x012.end(),x12.begin(),x12.end());
@@ -240,7 +219,7 @@ public:
             x_left = x012;
             x_right = x02;
         }
-       // std::cout << "J'ai xleft"<< std::endl;
+
         for(int y = y0;y<= y2;y++)
         {
             for(int x = x_left[y-y0];x<=x_right[y-(int)y0];++x)
@@ -268,12 +247,10 @@ public:
         {
             auto x_l = x_left[y-y0];
             auto x_r = x_right[y - y0];
-            //std::cout << y - y0 << std::endl;
             auto h_segment = interpolate(x_l,h_left[y-y0],x_r,h_right[y-y0]);
             for(int x = x_left[y-y0];x<=x_right[y-y0];++x)
             {
                 Color shaded_color = {(Uint8)(color.r * (Uint8)h_segment[x-x_l]),(Uint8)(color.g * (Uint8)h_segment[x-x_l]),(Uint8)(color.b * (Uint8)h_segment[x-x_l]),0};
-                //std::cout << "shaded"<< to_string(shaded_color) << std::endl;
                 window.put_pixel(x,y,shaded_color);
             }
         }
@@ -281,17 +258,11 @@ public:
 
      Vec2r projection2(Vec4r &v,real d)
     {
-      // std::cout << " v " << v << std::endl;
         Vec2r v1 = viewport_to_canvas(v);
-       // std::cout << v1 << std::endl;
         if(v[2] != 0.0){
             v1[0] = (-d/ v[2]) * v1[0];
-        //    std::cout << -d << " : " << v[2] << " : " << std::endl;
             v1[1] = (-d / v[2]) * v1[1];
-         //   std::cout << v1[1] << std::endl;
         }
-        
-        // std::cout << v1 << std::endl;
        return canvas_to_window(v1);
     }
     std::vector<real> interpolate(int i0,real d0,int i1,real d1)
@@ -315,10 +286,8 @@ public:
     void draw_line( real x0,real y0, real x1,real y1 )
     {
         real a =0;
-     //   int x0= v0[0],x1=v1[0],y0=v0[1],y1=v1[1];
         real dx = (real)x1 - (real)x0;
         real dy = (real)y1 - (real)y0;
-        //std::cout << dx << dy<<std::endl;
         if(std::abs(dx)>std::abs(dy))
         {
             if(dx == (real)0)
@@ -328,14 +297,11 @@ public:
                     std::swap(x0,x1);
                     std::swap(y0,y1);
                 }
-                
             }
             a = (real)dy / (real)dx;
             real y = y0;
             for(int x =x0;x<=x1;x++)
             {
-            
-                //std::cout << x << " " << (v1[1] ) << " " << (v1[0]- v0[0]) << std::endl;
                 window.put_pixel(x,y,WHITE);
                 y =(real)y +(real)a;
             }
@@ -348,11 +314,8 @@ public:
             }
             else{
                 if(y1 < y0){
-                    //std::cout << "avant :" << v0[0] << "/"<<v1[0]<<std::endl;
                     std::swap(x0,x1);
                     std::swap(y0,y1);
-                    //std::cout << "apres :" << v0[0] << "/"<<v1[0]<<std::endl;
-                    //std::swap(v0,v1);
                 }
                 
             }

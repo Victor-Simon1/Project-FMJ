@@ -131,27 +131,33 @@ public:
             window.clear();
             window.set_draw_color( WHITE );
             Vertex v1,v2,v3;
-            
-            for(int i =0;i<listObject.size();i++)
+            //std::cout << "FPS : " << window.fps_info << std::endl;
+            for(size_t i =0;i<listObject.size();i++)
             {
+                //std::cout << "i :"<< i << std::endl;
                 std::vector<Vertex> ver = listObject[i].get_vertices();
-                for(int k = 0;k<ver.size();k++)
+                for(size_t k = 0;k<ver.size();k++)
                 {
-                    std::cout << "Base : " << Vec4r({ ver[k].vert[0],ver[k].vert[1],ver[k].vert[2], 1.0})<< std::endl;
+                  //  std::cout << "Base : " << Vec4r({ ver[k].vert[0],ver[k].vert[1],ver[k].vert[2], 1.0})<< std::endl;
                     Vec4r vect = listObject[i].transform() * Vec4r({ ver[k].vert[0],ver[k].vert[1],ver[k].vert[2], 1.0});
                     Vec2r proj = projection2(vect,1);
                     //Vec2r proj = projection(vect);
                    // std::cout << "vct"<<vect << std::endl;
-                    std::cout << "proj"<<proj << std::endl;
+                   // std::cout << "proj"<<proj << std::endl;
                     ver[k].vert[0] = proj[0];
                     ver[k].vert[1] = proj[1];
                 }
-                for(int j=0;j<listObject[i].get_faces().size();j++)
-                {       
+               // std::cout << "i :"<< i << std::endl;
+                for(size_t j=0;j<listObject[i].get_faces().size();j++)
+                {
+                 //   std::cout << "i :"<< i << std::endl;
                     v1 = ver[listObject[i].get_faces()[j].v0-1];
+                   // std::cout << "i :"<< i << std::endl;
                     v2 = ver[listObject[i].get_faces()[j].v1-1];
+                    //std::cout << "i :"<< i << std::endl;
                     v3 = ver[listObject[i].get_faces()[j].v2-1];
                    // std::cout <<" jai mis dans les var"<< std::endl;
+                   //std::cout << "i :"<< i << std::endl;
                     switch(mode)
                     {
                         case WIREFRAME:
@@ -165,7 +171,7 @@ public:
             }
             // clear window
             window.display();
-           // break;
+            //break;
         }
         shutdown();
     }
@@ -178,8 +184,8 @@ public:
     Vec2r viewport_to_canvas( const Vec4r & point ) 
     {
         Vec2r pointInCanvas;
-        real Cw = 400;
-        real Ch = 400;
+        real Cw = Sw;
+        real Ch = Sh;
         real Vw = 2;
         real Vh = (real)((real)Sh/(real)Sw) *Vw;
 
@@ -192,8 +198,8 @@ public:
     Vec2r canvas_to_window( const Vec2r & point ) 
     {
         Vec2r pointInWindows;
-        int Cw = 400;
-        int Ch = 400;
+        int Cw = Sw;
+        int Ch = Sh;
         pointInWindows[0] =  (Cw  / (real)2 ) +  point[0];
         pointInWindows[1] = (Ch /(real)2) - point[1];
         //std::cout << " CtoW : "<<pointInWindows[0] << " " << pointInWindows[1]<< std::endl; 
@@ -266,41 +272,26 @@ public:
             auto h_segment = interpolate(x_l,h_left[y-y0],x_r,h_right[y-y0]);
             for(int x = x_left[y-y0];x<=x_right[y-y0];++x)
             {
-                Color shaded_color = {color.r * h_segment[x-x_l],color.g * h_segment[x-x_l],color.b * h_segment[x-x_l],0};
+                Color shaded_color = {(Uint8)(color.r * (Uint8)h_segment[x-x_l]),(Uint8)(color.g * (Uint8)h_segment[x-x_l]),(Uint8)(color.b * (Uint8)h_segment[x-x_l]),0};
                 //std::cout << "shaded"<< to_string(shaded_color) << std::endl;
                 window.put_pixel(x,y,shaded_color);
             }
         }
     }
-    Vec2r projection(Vec4r &v)
-    {
-        Vec2r v1;
-        if(v[2] != 0.0){
-        v1[0] = (-0.5/ v[2]) * v[0];
-        v1[1] = (-0.5 / v[2]) * v[1];
-        }
-        else
-        {
-            v1[0] = v[0];
-            v1[1] =  v[1];
-        }
-        std::cout << v << std::endl;
-        std::cout << v1 << std::endl;
-        return v1;
-    }
+
      Vec2r projection2(Vec4r &v,real d)
     {
-       std::cout << " v " << v << std::endl;
+      // std::cout << " v " << v << std::endl;
         Vec2r v1 = viewport_to_canvas(v);
-        std::cout << v1 << std::endl;
+       // std::cout << v1 << std::endl;
         if(v[2] != 0.0){
             v1[0] = (-d/ v[2]) * v1[0];
-            std::cout << -d << " : " << v[2] << " : " << std::endl;
+        //    std::cout << -d << " : " << v[2] << " : " << std::endl;
             v1[1] = (-d / v[2]) * v1[1];
-            std::cout << v1[1] << std::endl;
+         //   std::cout << v1[1] << std::endl;
         }
         
-         std::cout << v1 << std::endl;
+        // std::cout << v1 << std::endl;
        return canvas_to_window(v1);
     }
     std::vector<real> interpolate(int i0,real d0,int i1,real d1)

@@ -17,6 +17,7 @@ using namespace minwin;
 //using Vec2r = Vector<real,2ul>;
 //export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/home/victor/Bureau/Vector/minwin/bin
 
+enum Mode{WIREFRAME,FILLED};
 class Scene
 {
 public:
@@ -24,9 +25,10 @@ public:
     Window window;
     uint Sh;//screen height
     uint Sw;//screen width
-    std::vector<Shape<Vec2r>> listShape;
+    std::vector<Shape> listShape;
     std::vector<Object> listObject;
     bool running;
+    Mode mode = WIREFRAME;
     Scene():running(true){}
     ~Scene(){}
 
@@ -48,8 +50,8 @@ public:
         std::string line;
         std::string type;
         std::string v1,v2,v3;
-        Shape<Vec3r> sh;
-        std::vector<Vertex<Vec3r>> vertices;
+        Shape sh;
+        std::vector<Vertex> vertices;
         std::vector<Face> faces;
         while(getline(f,line))
         {
@@ -57,7 +59,7 @@ public:
             getline(X,type,' ');
             if(type == "v" || type == "f")
             {
-                std::cout << type << std::endl;
+               // std::cout << type << std::endl;
                 if(type == "v")
                 {
                     
@@ -65,9 +67,9 @@ public:
                     getline(X,v2,' ');
                     getline(X,v3,' ');
                    // std::cout <<"slt";//atof(value[0].c_str())<<std::endl;
-                    Vec3r v {atof(v1.c_str()),atof(v2.c_str()),atof(v3.c_str())};
+                    Vec4r v { atof(v1.c_str()),atof(v2.c_str()),atof(v3.c_str()),1.0 };
                     //std::cout << v << std::endl;
-                    vertices.push_back(Vertex<Vec3r>(v,0.0));
+                    vertices.push_back(Vertex(v,0.0));
                     
                 }
                 else
@@ -75,14 +77,14 @@ public:
                     getline(X,v1,' ');
                     getline(X,v2,' ');
                     getline(X,v3,' ');
-                    std::cout << line <<std::endl;
+                   // std::cout << line <<std::endl;
                     faces.push_back(Face(v1,v2,v3,WHITE));
                 }
             }
            
         }
          
-        Object obj = Object(Shape<Vec3r>("",vertices,faces),{0,0,0},{0,0,0},{0,0,0});
+        Object obj = Object(Shape(file_name,vertices,faces),{1,1,1},{1,1,1},{1,1,1});
         listObject.push_back(obj);
         f.clear();
     }
@@ -90,7 +92,7 @@ public:
     {
 
     }
-    void add_shape(const Shape<Vec2r> &shape)
+    void add_shape(const Shape &shape)
     {
         listShape.push_back(shape);
     }
@@ -108,6 +110,7 @@ public:
         window.register_quit_behavior( new QuitButtonBehavior( *this ) );
         window.register_key_behavior( KEY_X, new QuitKeyBehavior( *this ) );
         window.register_key_behavior( KEY_Q, new QuitKeyBehavior( *this ) );
+        window.register_key_behavior( KEY_SPACE, new QuitModeBehavior( *this ) );
         //window.register_key_behavior( minwin::KEY_SPACE, new ChangeColorBehavior( *this ) );
   
          // open window
@@ -131,17 +134,34 @@ public:
             window.process_input();
             window.clear();
             window.set_draw_color( WHITE );
-            Vertex<Vec3r> v1,v2,v3;
+            Vertex v1,v2,v3;
+            
             for(int i =0;i<listObject.size();i++)
             {
-                for(int j=0;j<listObject[i].sh.get_faces().size();j++)
+                std::vector<Vertex> ver = listObject[i].sh.get_vertices();
+                for(int k = 0;k<ver.size();k++)
                 {
-                    v1 = listObject[i].sh.get_vertices()[listObject[i].sh.get_faces()[j].v0-1];
-                    v2 = listObject[i].sh.get_vertices()[listObject[i].sh.get_faces()[j].v1-1];
-                    v3 = listObject[i].sh.get_vertices()[listObject[i].sh.get_faces()[j].v2-1];
+                    Vec4r vect = listObject[i].transform() * Vec4r({ ver[i].vert[0],ver[i].vert[0],ver[i].vert[2], 1.0});
+                    Vec2r proj = projection2(vect,-0.5);
+                    ver[i].vert[0] = proj[0];
+                    ver[i].vert[1] = proj[1];
+                }
+                for(int j=0;j<listObject[i].sh.get_faces().size();j++)
+                {       
+                    v1 = ver[listObject[i].sh.get_faces()[j].v0-1];
+                    v2 = ver[listObject[i].sh.get_faces()[j].v1-1];
+                    v3 = ver[listObject[i].sh.get_faces()[j].v2-1];
                    // std::cout <<" jai mis dans les var"<< std::endl;
-                    draw_wireframe_triangle(v1.vert,v2.vert,v3.vert);
-                    //draw_filled_triangle(3Dto2d(v1.vert,v2.vert,v3.vert);
+                    switch(mode)
+                    {
+                        case WIREFRAME:
+                            draw_wireframe_triangle(v1.vert,v2.vert,v3.vert);
+                            break;
+                        case FILLED:
+                            draw_filled_triangle(v1.vert,v2.vert,v3.vert);
+                            break;
+                    }
+                    
 
                 }
                
@@ -159,7 +179,7 @@ public:
         window.close();
     }
 
-    Vec2r viewport_to_canvas( const Vec2r & point ) 
+    Vec2r viewport_to_canvas( const Vec4r & point ) 
     {
         Vec2r pointInCanvas;
         real Cw = Sw;
@@ -178,8 +198,8 @@ public:
         Vec2i pointInWindows;
         int Cw = Sw;
         int Ch = Sh;
-        real Vw = 2;
-        real Vh = (real)((real)Sh/(real)Sw) *Vw;
+        //real Vw = 2;
+      //  real Vh = (real)((real)Sh/(real)Sw) *Vw;
         pointInWindows[0] =  (Cw  / (real)2 ) +  point[0];
         pointInWindows[1] = (Ch /(real)2) - point[1];
         //std::cout << pointInWindows[0] << " " << pointInWindows[1]<< std::endl; 
@@ -187,7 +207,7 @@ public:
         return pointInWindows;
     }
 
-    void draw_wireframe_triangle(  Vec3r &v0,Vec3r &v1,Vec3r &v2 ) 
+    void draw_wireframe_triangle(  Vec4r &v0,Vec4r &v1,Vec4r &v2 ) 
     {   
         //std::cout << viewport_to_canvas(v0)[1]<<" "<< v1[1]<< " "<< v2[1]<<std::endl;
         /*if(v1[1]<v0[1])std::swap(v1,v0);
@@ -195,26 +215,16 @@ public:
         if(v2[1]<v1[1])std::swap(v2,v1);*/
     // std::cout << "clac"<<std::endl;
         real d = 0.5;
-        Vec2i v0i = canvas_to_window(/*viewport_to_canvas(*/projection2(v0,d))/*)*/;
-        Vec2i v1i = canvas_to_window(/*viewport_to_canvas(*/projection2(v1,d))/*)*/;
-        Vec2i v2i = canvas_to_window(/*viewport_to_canvas(*/projection2(v2,d))/*)*/;
+        Vec2i v0i = canvas_to_window(viewport_to_canvas(v0));
+        Vec2i v1i = canvas_to_window(viewport_to_canvas(v1));
+        Vec2i v2i = canvas_to_window(viewport_to_canvas(v2));
         //std::cout << "ciic"<<std::endl;
         draw_line(v0i,v1i);
         draw_line(v1i,v2i);
         draw_line(v2i,v0i);
     }
-    std::vector<int> concat(std::vector<int> &v0,std::vector<int> &v1)
-    {
-        std::vector<int> v2 = v0;
-        for(int i = 0;i<v1.size();i++)
-        {
-            if(!(std::find(v2.begin(),v2.end(),v1[i])!=v2.end()))
-                v2.push_back(v1[i]);
-        }
-
-        return v2;
-    }
-    void draw_filled_triangle(  Vec2r &v0,  Vec2r &v1,  Vec2r &v2 ) 
+ 
+    void draw_filled_triangle(  Vec4r &v0,  Vec4r &v1,  Vec4r &v2 ) 
     {
         Vec2i v0i = canvas_to_window(viewport_to_canvas(v0));
         Vec2i v1i = canvas_to_window(viewport_to_canvas(v1));
@@ -316,17 +326,27 @@ public:
 
 
     }
-     Vec2r projection2(Vec3r &v,real d)
+     Vec2r projection2(Vec4r &v,real d)
     {
-        real Vw = 2.0;
-        real Vh = (Sh/(real)Sw) *Vw;
-        Vector<real,4> v1 {v[0],v[1],v[2],1.0};
-        Matrix<real,4,4> m  { {(real)Sw/Vw, 0.0, 0.0,0.0}, {0.0, (real)Sh/Vh, 0.0,0.0}, {0.0,0.0, 1.0, 0.0} ,{0.0,0.0,0.0,1.0}};
-        Matrix<real,4,4> m1  { {d, 0.0, 0.0,0.0}, {0.0,d, 0.0,0.0}, {0.0,0.0, 1.0, 0.0} ,{0.0,0.0,0.0,1.0}};
+        
+       // real Vw = 2.0;
+        //real Vh = (Sh/(real)Sw) *Vw;
+        //Vector<real,4> v1 {v[0],v[1],v[2],1.0};
+        //Matrix<real,4,4> m  { {(real)Sw/Vw, 0.0, 0.0,0.0}, {0.0, (real)Sh/Vh, 0.0,0.0}, {0.0,0.0, 1.0, 0.0} ,{0.0,0.0,0.0,1.0}};
+       // Matrix<real,4,4> m1  { {d, 0.0, 0.0,0.0}, {0.0,d, 0.0,0.0}, {0.0,0.0, 1.0, 0.0} ,{0.0,0.0,0.0,1.0}};
        
-       Vector<real,4> v2 = m*m1*v1;
-       std::cout << v << std::endl;
-      
+        //Vector<real,4> v2 = m*m1*v1;
+       //std::cout << v << std::endl;
+        Vec2r v1;
+        if(v[2] != 0.0){
+            v1[0] = (-d/ v[2]) * v[0];
+            v1[1] = (-d / v[2]) * v[1];
+        }
+        else
+        {
+            v1[0] = v[0];
+            v1[1] =  v[1];
+        }
        /* if(v[2] != 0.0){
         v1[0] = (-0.5/ v[2]) * v[0];
         v1[1] = (-0.5 / v[2]) * v[1];
@@ -338,9 +358,9 @@ public:
         }
         std::cout << v << std::endl;
         std::cout << v1 << std::endl;*/
-        Vec2r v3 {v2[0],v2[1]};
-         std::cout << v3 << std::endl;
-        return v3;
+        //Vec2r v3 {v2[0],v2[1]};
+        // std::cout << v3 << std::endl;
+        return v1;
 
 
     }
@@ -421,29 +441,7 @@ public:
     
     }
 
-/*
-void draw_line( const Vec2i & v0, const Vec2i & v1 )
-{
-    real dx = v1[0] - v0[0];
-    real dy = v1[1] - v0[1];
-    int ax = (int)dx <<1;
-    int ay = (int)dy <<1;
-    int d = 2*ay - ax;
-    std::cout << "x"<< v0[0]<<" " << v1[0]<< std::endl;
-    real y = (real)v0[1];
-    for(int x = v0[0];x<=v1[0];++x)
-    {
-        window.put_pixel(x,y,WHITE);
-        //std::cout << "put"<<std::endl;
-        if(d>=0)
-        {
-            y = (real)y + (real)1;
-            
-            d = (real)d - (real)ax;
-        }
-        d = (real)d + (real)2*(real)ay;
-    }
-}*/
+
  class QuitButtonBehavior : public minwin::IButtonBehavior
   {
     public:
@@ -463,7 +461,15 @@ void draw_line( const Vec2i & v0, const Vec2i & v1 )
       Scene & owner;
   };
   
-
+class QuitModeBehavior : public minwin::IKeyBehavior
+  {
+    public:
+      QuitModeBehavior( Scene & app ) : owner { app } {}
+      void on_press() const override;
+      void on_release() const override;
+    private:
+      Scene & owner;
+  };
 };
 /*
 void swap(const Vec2r &v0,const Vec2r &v1)
@@ -473,7 +479,13 @@ void swap(const Vec2r &v0,const Vec2r &v1)
     v1 = temp;
 }*/
 void Scene::QuitButtonBehavior::on_click() const { this->owner.running = false; }
+void Scene::QuitModeBehavior::on_press() const{
+    std::cout << "Changement de mode" << std::endl;
+    if(this->owner.mode==WIREFRAME)this->owner.mode = FILLED;
+    else this->owner.mode = WIREFRAME;
+}
 
+void Scene::QuitModeBehavior::on_release() const {} // does nothing
 void Scene::QuitKeyBehavior::on_press() const   { this->owner.running = false; }
 void Scene::QuitKeyBehavior::on_release() const {} // does nothing
 

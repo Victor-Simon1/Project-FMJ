@@ -260,5 +260,6 @@ using uint = unsigned int;
 using real = double;
 using Vec2r = aline::Vector<real,2ul>;
 using Vec3r = aline::Vector<real,3ul>;
+using Vec4r = aline::Vector<real,4ul>;
 using Vec2i = aline::Vector<uint,2ul>;
 #endif

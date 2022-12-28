@@ -18,10 +18,18 @@ public:
         rot = r;
         scale = s;
     }
+    std::vector<Vertex> get_vertices() const
+    {
+        return sh.get_vertices();
+    }
 
+    std::vector<Face> get_faces() const
+    {
+        return sh.get_faces();
+    }
     Matrix<real,4,4> transform()
     {
-        Matrix<real,4,4> trans { {1.0,0.0,0.0,translation[0]},{0.0,1.0,0.0,translation[1]},{0.0,0.0,1.0,translation[3]},{0.0,0.0,0.0,1.0} };
+        Matrix<real,4,4> trans { {1.0,0.0,0.0,translation[0]},{0.0,1.0,0.0,translation[1]},{0.0,0.0,1.0,translation[2]},{0.0,0.0,0.0,1.0} };
         Matrix<real,4,4> sc { {scale[0],0.0,0.0,0.0},{0.0,scale[1],0.0,0.0},{0.0,0.0,scale[2],0.0},{0.0,0.0,0.0,1.0} };
         //Matrix<real,4,4> rot {{1,0,0,translation[0]},{0,1,0,translation[1]},{0,0,1,translation[3]},{0,0,0,1}};
 

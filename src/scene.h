@@ -3,6 +3,7 @@
 #include "vector.h"
 #include "shape.h"
 #include "object.h"
+#include "camera.h"
 #include <vector>
 #include <sstream>
 #include <algorithm>
@@ -113,14 +114,14 @@ public:
     void run()
     {   
         //load_obj_file("file/tetrahedron.obj");
-
+        Camera cam = Camera(Sw/Sh);
         while( this->running )
         {
             // process keyboard inputs, etc.
             window.process_input();
             window.clear();
             window.set_draw_color( WHITE );
-            std::cout << "allo";
+     
             Vertex v1,v2,v3;
             for(size_t i =0;i<listObject.size();i++)
             {

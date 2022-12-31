@@ -14,3 +14,6 @@ il faut lancer la commande suivante :
 Le(s) test(s) concerné(s) par cela sont :
 
     - test/test_window
+
+# Test
+

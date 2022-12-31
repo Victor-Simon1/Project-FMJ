@@ -228,6 +228,16 @@ namespace aline
 			}
 			return scalar;*/
 		}
+		template <class T,size_t N> Vector<T, N> operator/(const Vector<T, N>& v1, const Vector<T,N>& v2)
+		{
+			
+			Vector<T,N> scalar = Vector<T,N>();
+			for(size_t i =0;i<N;i++)
+			{
+				scalar[i] = v1.vec[i] / v2.vec[i];
+			}
+			return scalar;
+		}
 		template <class T,size_t N> std::string to_string(const Vector<T, N>& v)
 		{
 			std::string s;

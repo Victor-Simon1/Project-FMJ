@@ -334,4 +334,6 @@ namespace aline
         return mat;
     }
 }
+
+using Mat44r = aline::Matrix<real,4ul,4ul>;
 #endif

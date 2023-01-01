@@ -24,6 +24,7 @@ public:
         vert = c;
         intensity = h;
     }
+    
 };
 
 class Face

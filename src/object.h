@@ -18,6 +18,10 @@ public:
         rot = r;
         scale = s;
     }
+    Object()
+    {
+        
+    }
     std::vector<Vertex> get_vertices() const
     {
         return sh.get_vertices();

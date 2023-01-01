@@ -1,9 +1,11 @@
 #ifndef SCENE_H
 #define SCENE_H
 #include "vector.h"
+#include "matrix.h"
 #include "shape.h"
 #include "object.h"
 #include "camera.h"
+#include "frustum.h"
 #include <vector>
 #include <sstream>
 #include <algorithm>
@@ -115,6 +117,7 @@ public:
     {   
         //load_obj_file("file/tetrahedron.obj");
         Camera cam = Camera(Sw/Sh);
+        Frustum frust = Frustum(2.0,5.0);
         while( this->running )
         {
             // process keyboard inputs, etc.
@@ -125,6 +128,8 @@ public:
             Vertex v1,v2,v3;
             for(size_t i =0;i<listObject.size();i++)
             {
+                Mat44r o_tt = cam.transform();
+                Object o_clip = cam.cull(listObject[i]); 
                 std::vector<Vertex> ver = listObject[i].get_vertices();
                 for(size_t k = 0;k<ver.size();k++)
                 {

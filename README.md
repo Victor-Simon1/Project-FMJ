@@ -17,6 +17,12 @@ Le(s) test(s) concerné(s) par cela sont :
 
 # Rendu 
 Toutes les fonctions ont été faites, mais pas toutes testés.
+
 Cull retourne bien un objet contenant des faces et des vertex.
-Mais il n'y a rien qui s'affiche car en sortie de clip l'objet est vide et je n'ai pas réussi à trouver 
+En sortie de clip l'objet est vide et fait que rien ne s'affiche sur la fenetre, mais je n'ai pas réussi à voir ce qui n'était pas bien fait dans ma fonction.
+
+# Touche
+
+- X / Q : quitter
+- Space : Changer le mode
 

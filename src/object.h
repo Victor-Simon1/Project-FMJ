@@ -18,10 +18,14 @@ public:
         rot = r;
         scale = s;
     }
-    Object()
+    Object(const Object &obj)
     {
-        
+        sh = obj.sh;
+        translation = obj.translation;
+        rot = obj.rot;
+        scale = obj.scale;
     }
+    Object(){}
     std::vector<Vertex> get_vertices() const
     {
         return sh.get_vertices();

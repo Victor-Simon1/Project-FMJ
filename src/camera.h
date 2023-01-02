@@ -116,8 +116,14 @@ public:
             Vec4r e02 = v2.vert - v0.vert;
             Vec4r e12 = v2.vert - v1.vert;
 
-            Vec4r n = (e01 * e02) / (e01-e02); 
+           // Vec4r n = (e01 * e02) / (e01-e02); 
+           Vec4r n = cross(e01,e02);
             Vec4r center = (v0.vert + v1.vert + v2.vert) / 3.0;
+          /* std::cout << "up"<< e01 * e02 << std::endl;
+            std::cout << "down"<< e01-e02 << std:endl;*/
+             //std::cout << "n"<< n << std::endl;
+              //std::cout <<"center " <<center << std::endl;
+            std::cout << dot(center,n) << std::endl;
             if(dot(center,n) <0 )return true;
             return false;
         

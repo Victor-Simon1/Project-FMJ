@@ -129,26 +129,51 @@ public:
             Vertex v1,v2,v3;
             for(size_t i =0;i<listObject.size();i++)
             {
-                
-                Mat44r o_tt = cam.transform();
-                Object o_clip = cam.cull(listObject[i]);
-
-                o_clip = frust.clip(o_clip); 
+                Object o_t = Object(listObject[i]);
+               // std::cout << "copie"<<std::endl;
                 std::vector<Vertex> ver = listObject[i].get_vertices();
                 for(size_t k = 0;k<ver.size();k++)
                 {
-                    Vec4r vect = listObject[i].transform() * Vec4r({ ver[k].vert[0],ver[k].vert[1],ver[k].vert[2], 1.0});
+                    ver[i] = Vertex(listObject[i].transform() * Vec4r({ ver[k].vert[0],ver[k].vert[1],ver[k].vert[2], 1.0}),ver[i].intensity);
                     
-                    Vec2r proj = projection2(vect,1);
+                   // Vec2r proj = projection2(vect,1);
+                   // ver[k].vert[0] = proj[0];
+                   // ver[k].vert[1] = proj[1];
+                }
+                //std::cout << "copie"<<std::endl;
+                o_t.sh.vertices = ver;
+                //std::cout << "copie"<<std::endl;
+                Mat44r o_tt = cam.transform();
+                //std::cout << "cam"<<std::endl;
+                Object o_clip = cam.cull(o_t);
+                //std::cout << o_clip.get_vertices().size()<<std::endl;
+                 //std::cout << o_clip.get_faces().size()<<std::endl;
+                //std::cout << "cull"<<std::endl;
+
+                o_clip = frust.clip(o_clip); 
+                //std::cout << o_clip.get_vertices().size()<<std::endl;
+                 //std::cout << o_clip.get_faces().size()<<std::endl;
+                //std::cout << "clip"<<std::endl;
+                ver =o_clip.get_vertices();
+                //std::cout << ver.size()<<std::endl;
+                for(size_t k = 0;k<ver.size();k++)
+                {
+                    //Vec4r vect = listObject[i].transform() * Vec4r({ ver[k].vert[0],ver[k].vert[1],ver[k].vert[2], 1.0});
+                  //  std::cout << "proj"<<std::endl;
+                    Vec2r proj = projection2(ver[i].vert,1);
+                    //std::cout << "proj"<<std::endl;
                     ver[k].vert[0] = proj[0];
                     ver[k].vert[1] = proj[1];
                 }
-            
-                for(size_t j=0;j<listObject[i].get_faces().size();j++)
+                 //std::cout << "clip"<<std::endl;
+                 o_clip.sh.vertices = ver;
+                 //std::cout << o_clip.get_vertices().size()<<std::endl;
+                 //std::cout << o_clip.get_faces().size()<<std::endl;
+                for(size_t j=0;j<o_clip.get_faces().size();j++)
                 {
-                    v1 = ver[listObject[i].get_faces()[j].v0-1];
-                    v2 = ver[listObject[i].get_faces()[j].v1-1];
-                    v3 = ver[listObject[i].get_faces()[j].v2-1];
+                    v1 = ver[o_clip.get_faces()[j].v0-1];
+                    v2 = ver[o_clip.get_faces()[j].v1-1];
+                    v3 = ver[o_clip.get_faces()[j].v2-1];
                     switch(mode)
                     {
                         case WIREFRAME:

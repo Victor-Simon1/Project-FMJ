@@ -127,9 +127,10 @@ public:
     {
         Shape sh;
         sh.vertices = obj.get_vertices();
+        // std::cout << "face" << std::endl;
         for(Face f : obj.get_faces())
         {
-            if(sees(obj.get_vertices()[f.v0],obj.get_vertices()[f.v1],obj.get_vertices()[f.v2]))
+            if(sees(obj.get_vertices()[f.v0-1],obj.get_vertices()[f.v1-1],obj.get_vertices()[f.v2-1]))
             {
                 sh.faces.push_back(f);
             }

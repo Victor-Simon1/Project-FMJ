@@ -118,6 +118,7 @@ public:
         //load_obj_file("file/tetrahedron.obj");
         Camera cam = Camera(Sw/Sh);
         Frustum frust = Frustum(2.0,5.0);
+        Object obj;
         while( this->running )
         {
             // process keyboard inputs, etc.
@@ -128,16 +129,21 @@ public:
             Vertex v1,v2,v3;
             for(size_t i =0;i<listObject.size();i++)
             {
+                
                 Mat44r o_tt = cam.transform();
-                Object o_clip = cam.cull(listObject[i]); 
+                Object o_clip = cam.cull(listObject[i]);
+
+                o_clip = frust.clip(o_clip); 
                 std::vector<Vertex> ver = listObject[i].get_vertices();
                 for(size_t k = 0;k<ver.size();k++)
                 {
                     Vec4r vect = listObject[i].transform() * Vec4r({ ver[k].vert[0],ver[k].vert[1],ver[k].vert[2], 1.0});
+                    
                     Vec2r proj = projection2(vect,1);
                     ver[k].vert[0] = proj[0];
                     ver[k].vert[1] = proj[1];
                 }
+            
                 for(size_t j=0;j<listObject[i].get_faces().size();j++)
                 {
                     v1 = ver[listObject[i].get_faces()[j].v0-1];

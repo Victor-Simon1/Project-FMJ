@@ -123,7 +123,7 @@ public:
             std::cout << "down"<< e01-e02 << std:endl;*/
              //std::cout << "n"<< n << std::endl;
               //std::cout <<"center " <<center << std::endl;
-            std::cout << dot(center,n) << std::endl;
+           // std::cout << dot(center,n) << std::endl;
             if(dot(center,n) <0 )return true;
             return false;
         

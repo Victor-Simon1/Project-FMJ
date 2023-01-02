@@ -73,11 +73,8 @@ public:
             far = far * 0.5;
             real r = norm(v1 - far);
 */          
-            std::cout << "neear plane" << std::endl;
+  
             //near_plane
-        //    std::cout << near_plane << std::endl;
-       //     std::cout <<f.v0 << std::endl;
-        //    std::cout <<obj.get_vertices()[f.v0-1].vert << std::endl;
             real s0 = dot(Vec3r({near_plane[0],near_plane[1],near_plane[2]}),Vec3r({obj.get_vertices()[f.v0-1].vert[0],obj.get_vertices()[f.v0-1].vert[1],obj.get_vertices()[f.v0-1].vert[2]})) + near_plane[3];
           //  std::cout << s0 << std::endl;
             real s1 = dot(Vec3r({near_plane[0],near_plane[1],near_plane[2]}),Vec3r({obj.get_vertices()[f.v1-1].vert[0],obj.get_vertices()[f.v1-1].vert[1],obj.get_vertices()[f.v1-1].vert[2]})) + near_plane[3];
@@ -92,7 +89,7 @@ public:
           //  std::cout << s0 << " : "<< s1 << " : " << s2 << std::endl;
             if(s0 >=0 && s1 >=0 && s2 >=0)//accepted
             {
-                std::cout << "3" << std::endl;
+              //  std::cout << "3" << std::endl;
                 sh.get_vertices().push_back(v0);
                 sh.get_vertices().push_back(v1);
                 sh.get_vertices().push_back(v2);
@@ -101,7 +98,7 @@ public:
             }
             else if(s0 >=0 && s1 >=0 && s2 <0)
             {
-                std::cout << "2" << std::endl;
+              //  std::cout << "2" << std::endl;
                 sh.get_vertices().push_back(v0);
                 sh.get_vertices().push_back(v1);
                 real t = -dot(near_plane, v0.vert) / dot(near_plane,v2.vert-v0.vert);
@@ -119,7 +116,7 @@ public:
                 sh.get_faces().push_back(Face(size-2,size-1,size,f.color));
             }
             else if(s0 >=0 && s2 >=0 && s1 <0)
-            { std::cout << "2" << std::endl;
+            { //std::cout << "2" << std::endl;
                 sh.get_vertices().push_back(v0);
                 sh.get_vertices().push_back(v2);
                 
@@ -137,7 +134,7 @@ public:
                 sh.get_faces().push_back(Face(size-2,size-1,size,f.color));
             }
             else if(s1 >=0 && s2 >=0 && s0 <0)
-            { std::cout << "2" << std::endl;
+            {// std::cout << "2" << std::endl;
                 sh.get_vertices().push_back(v1);
                 sh.get_vertices().push_back(v2);
                 real t = -dot(near_plane, v1.vert) / dot(near_plane,v1.vert-v0.vert);
@@ -155,7 +152,7 @@ public:
             }
             else if (s0>= 0 && s1 <0 && s2<0)
             {
-                std::cout << "1" << std::endl;
+                //::cout << "1" << std::endl;
                 sh.get_vertices().push_back(v0);
                 real t = -dot(near_plane, v0.vert) / dot(near_plane,v1.vert-v0.vert);
                 Vec4r p = v0.vert + t * (v1.vert - v0.vert);
@@ -167,7 +164,7 @@ public:
                 sh.get_faces().push_back(Face(size-2,size-1,size,f.color));
             }
             else if (s1>= 0 && s0 <0 && s2<0)
-            {std::cout << "1" << std::endl;
+            {//std::cout << "1" << std::endl;
                 sh.get_vertices().push_back(v1);
                 real t = -dot(near_plane, v1.vert) / dot(near_plane,v0.vert-v1.vert);
                 Vec4r p = v1.vert + t * (v0.vert - v1.vert);
@@ -179,7 +176,7 @@ public:
                 sh.get_faces().push_back(Face(size-2,size-1,size,f.color));
             }
             else if (s2>= 0 && s1 <0 && s0<0)
-            {std::cout << "1" << std::endl;
+            {//std::cout << "1" << std::endl;
                 sh.get_vertices().push_back(v2);
                 real t = -dot(near_plane, v2.vert) / dot(near_plane,v1.vert-v2.vert);
                 Vec4r p = v2.vert + t * (v1.vert - v2.vert);

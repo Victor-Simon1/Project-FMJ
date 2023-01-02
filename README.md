@@ -15,5 +15,8 @@ Le(s) test(s) concerné(s) par cela sont :
 
     - test/test_window
 
-# Test
+# Rendu 
+Toutes les fonctions ont été faites, mais pas toutes testés.
+Cull retourne bien un objet contenant des faces et des vertex.
+Mais il n'y a rien qui s'affiche car en sortie de clip l'objet est vide et je n'ai pas réussi à trouver 
 
